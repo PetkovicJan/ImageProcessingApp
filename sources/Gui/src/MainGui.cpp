@@ -5,6 +5,7 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QGraphicsView>
+#include <QFileDialog>
 
 #include <iostream>
 
@@ -31,9 +32,16 @@ MainWidget::MainWidget()
   main_layout->addWidget(display);
 
   // Make connections.
-  QObject::connect(load_action, &QAction::triggered, [] 
+  QObject::connect(load_action, &QAction::triggered, [this, display] 
     {
-      std::cout << "Load clicked\n";
+      const auto image_name = QFileDialog::getOpenFileName(
+        this, tr("Load Image"), "/home", tr("Images (*.png *.jpg)"));
+
+      QPixmap img;
+      img.load(image_name);
+
+      display->scene()->addPixmap(img);
+      display->fitInView(display->sceneRect(), Qt::KeepAspectRatio);
     });
 
   QObject::connect(save_action, &QAction::triggered, [] 
