@@ -559,3 +559,22 @@ void gauss_filter(Array2d<T> const& src, ptrdiff_t kernel_radius_y, ptrdiff_t ke
   gauss_filter_y(tmp, kernel_radius_y, sigma_y, bc, dst);
 }
 
+template<typename T>
+void export_arr(std::string const& file_name, Array2d<T>& arr)
+{
+  std::fstream file(file_name, std::ios::out);
+
+  const auto min = min_value(arr);
+  const auto max = max_value(arr);
+  const auto scale = 255.999 / double(max - min + T(1));
+
+  file << "P3\n" << arr.width() << ' ' << arr.height() << "\n255\n";
+
+  foreach2d(arr, y, x)
+  {
+    const auto val = int(double(arr(y, x) - min) * scale);
+    file << val << ' ' << val << ' ' << val << '\n';
+  }
+ 
+  file.close();
+}
