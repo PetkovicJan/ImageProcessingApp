@@ -2,8 +2,13 @@
 
 #include <Gui/MainWidget.hpp>
 
+#include <Core/Core.hpp>
+
 class MainControl
 {
 public:
   explicit MainControl(MainWidget* main_widget);
+
+private:
+  Array2d<float> current_img_;
 };
