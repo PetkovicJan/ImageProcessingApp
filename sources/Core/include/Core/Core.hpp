@@ -559,6 +559,15 @@ void gauss_filter(Array2d<T> const& src, ptrdiff_t kernel_radius_y, ptrdiff_t ke
   gauss_filter_y(tmp, kernel_radius_y, sigma_y, bc, dst);
 }
 
+template<typename T, typename U>
+void threshold_array(Array2d<T> const& src, T threshold, U true_val, U false_val, Array2d<U>& dst)
+{
+  foreach2d(src, y, x)
+  {
+    dst(y, x) = src(y, x) >= threshold ? true_val : false_val;
+  }
+}
+
 template<typename T>
 void export_arr(std::string const& file_name, Array2d<T>& arr)
 {
