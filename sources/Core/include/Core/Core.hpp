@@ -4,15 +4,15 @@
 #include <type_traits>
 #include <fstream>
 
-#define foreach2d(arr, y, x) \
-  for(ptrdiff_t y = 0; y < arr.height(); ++y) \
-    for(ptrdiff_t x = 0; x < arr.width(); ++x)
+#define foreach2d(img, y, x) \
+  for(ptrdiff_t y = 0; y < img.height(); ++y) \
+    for(ptrdiff_t x = 0; x < img.width(); ++x)
 
-#define foreach_x(arr, x) \
-  for(ptrdiff_t x = 0; x < arr.width(); ++x)
+#define foreach_x(img, x) \
+  for(ptrdiff_t x = 0; x < img.width(); ++x)
 
-#define foreach_y(arr, y) \
-  for(ptrdiff_t y = 0; y < arr.height(); ++y)
+#define foreach_y(img, y) \
+  for(ptrdiff_t y = 0; y < img.height(); ++y)
 
 template<typename T>
 class Image2d
@@ -95,20 +95,20 @@ inline void Image2d<T>::alloc(ptrdiff_t h, ptrdiff_t w)
 }
 
 template<typename T>
-void fill(Image2d<T>& arr, T val)
+void fill(Image2d<T>& img, T val)
 {
-  foreach2d(arr, y, x)
+  foreach2d(img, y, x)
   {
-    arr(y, x) = val;
+    img(y, x) = val;
   }
 }
 
 template<typename T, typename U>
-void fill(Image2d<T>& arr, Image2d<U> const& other)
+void fill(Image2d<T>& img, Image2d<U> const& other)
 {
-  foreach2d(arr, y, x)
+  foreach2d(img, y, x)
   {
-    arr(y, x) = static_cast<T>(other(y, x));
+    img(y, x) = static_cast<T>(other(y, x));
   }
 }
 
@@ -532,7 +532,7 @@ namespace detail
 template<typename T>
 void gauss_filter_x(Image2d<T> const& src, ptrdiff_t kernel_radius, T sigma, BorderCondition bc, Image2d<T>& dst)
 {
-  static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point arrays.");
+  static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point imgays.");
 
   Image2d<T> gauss_kernel;
   detail::create_gauss_kernel(kernel_radius, sigma, gauss_kernel);
@@ -543,7 +543,7 @@ void gauss_filter_x(Image2d<T> const& src, ptrdiff_t kernel_radius, T sigma, Bor
 template<typename T>
 void gauss_filter_y(Image2d<T> const& src, ptrdiff_t kernel_radius, T sigma, BorderCondition bc, Image2d<T>& dst)
 {
-  static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point arrays.");
+  static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point imgays.");
 
   Image2d<T> gauss_kernel;
   detail::create_gauss_kernel(kernel_radius, sigma, gauss_kernel);
@@ -560,7 +560,7 @@ void gauss_filter(Image2d<T> const& src, ptrdiff_t kernel_radius_y, ptrdiff_t ke
 }
 
 template<typename T, typename U>
-void threshold_array(Image2d<T> const& src, T threshold, U true_val, U false_val, Image2d<U>& dst)
+void threshold_imgay(Image2d<T> const& src, T threshold, U true_val, U false_val, Image2d<U>& dst)
 {
   foreach2d(src, y, x)
   {
@@ -569,19 +569,19 @@ void threshold_array(Image2d<T> const& src, T threshold, U true_val, U false_val
 }
 
 template<typename T>
-void export_arr(std::string const& file_name, Image2d<T>& arr)
+void export_img(std::string const& file_name, Image2d<T>& img)
 {
   std::fstream file(file_name, std::ios::out);
 
-  const auto min = min_value(arr);
-  const auto max = max_value(arr);
+  const auto min = min_value(img);
+  const auto max = max_value(img);
   const auto scale = 255.999 / double(max - min + T(1));
 
-  file << "P3\n" << arr.width() << ' ' << arr.height() << "\n255\n";
+  file << "P3\n" << img.width() << ' ' << img.height() << "\n255\n";
 
-  foreach2d(arr, y, x)
+  foreach2d(img, y, x)
   {
-    const auto val = int(double(arr(y, x) - min) * scale);
+    const auto val = int(double(img(y, x) - min) * scale);
     file << val << ' ' << val << ' ' << val << '\n';
   }
  

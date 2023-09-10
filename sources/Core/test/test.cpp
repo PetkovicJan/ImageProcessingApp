@@ -6,42 +6,42 @@ TEST(Image2dBasicTest, ConstructionTest)
 {
   const ptrdiff_t h = 20;
   const ptrdiff_t w = 10;
-  Image2d<int> arr(h, w);
-  ASSERT_NE(arr.data(), nullptr);
-  ASSERT_EQ(arr.height(), h);
-  ASSERT_EQ(arr.width(), w);
+  Image2d<int> img(h, w);
+  ASSERT_NE(img.data(), nullptr);
+  ASSERT_EQ(img.height(), h);
+  ASSERT_EQ(img.width(), w);
 }
 
 TEST(Image2dBasicTest, AccessArrayElements)
 {
   const ptrdiff_t h = 20;
   const ptrdiff_t w = 10;
-  Image2d<int> arr(h, w);
+  Image2d<int> img(h, w);
   for (ptrdiff_t i = 0; i < h; ++i)
     for (ptrdiff_t j = 0; j < w; ++j)
-      arr(i, j) = i * w + j;
+      img(i, j) = i * w + j;
 
   for (ptrdiff_t i = 0; i < h; ++i)
     for (ptrdiff_t j = 0; j < w; ++j)
-      ASSERT_EQ(arr(i, j), i * w + j);
+      ASSERT_EQ(img(i, j), i * w + j);
 }
 
 TEST(Image2dBasicTest, Foreach2dLoopTest)
 {
   const ptrdiff_t h = 20;
   const ptrdiff_t w = 10;
-  Image2d<int> arr1(h, w);
+  Image2d<int> img1(h, w);
   for (ptrdiff_t i = 0; i < h; ++i)
     for (ptrdiff_t j = 0; j < w; ++j)
-      arr1(i, j) = i * w + j;
+      img1(i, j) = i * w + j;
 
-  Image2d<float> arr2(h, w);
-  foreach2d(arr2, i, j)
-    arr2(i, j) = i * w + j;
+  Image2d<float> img2(h, w);
+  foreach2d(img2, i, j)
+    img2(i, j) = i * w + j;
 
   for (ptrdiff_t i = 0; i < h; ++i)
     for (ptrdiff_t j = 0; j < w; ++j)
-      ASSERT_EQ(arr1(i, j), arr2(i, j));
+      ASSERT_EQ(img1(i, j), img2(i, j));
 }
 
 TEST(FilterFunctionTest, BoxFilterTest)
@@ -185,8 +185,8 @@ TEST(Image2dBasicTest, ExportArray)
   Image2d<float> grad_y(h, w);
   sobel_y(src, BorderCondition::BC_CLAMP, grad_y);
 
-  export_arr("test_src.ppm", src);
-  export_arr("test_gauss.ppm", gauss);
-  export_arr("test_sobel_x.ppm", grad_x);
-  export_arr("test_sobel_y.ppm", grad_y);
+  export_img("test_src.ppm", src);
+  export_img("test_gauss.ppm", gauss);
+  export_img("test_sobel_x.ppm", grad_x);
+  export_img("test_sobel_y.ppm", grad_y);
 }
