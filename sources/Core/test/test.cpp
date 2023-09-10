@@ -185,8 +185,8 @@ TEST(Image2dBasicTest, ExportArray)
   Image2d<float> grad_y(h, w);
   sobel_y(src, BorderCondition::BC_CLAMP, grad_y);
 
-  export_img("test_src.ppm", src);
-  export_img("test_gauss.ppm", gauss);
-  export_img("test_sobel_x.ppm", grad_x);
-  export_img("test_sobel_y.ppm", grad_y);
+  export_image("test_src.ppm", src);
+  export_image("test_gauss.ppm", gauss);
+  export_image("test_sobel_x.ppm", grad_x);
+  export_image("test_sobel_y.ppm", grad_y);
 }

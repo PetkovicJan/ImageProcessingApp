@@ -560,7 +560,7 @@ void gauss_filter(Image2d<T> const& src, ptrdiff_t kernel_radius_y, ptrdiff_t ke
 }
 
 template<typename T, typename U>
-void threshold_imgay(Image2d<T> const& src, T threshold, U true_val, U false_val, Image2d<U>& dst)
+void threshold_image(Image2d<T> const& src, T threshold, U true_val, U false_val, Image2d<U>& dst)
 {
   foreach2d(src, y, x)
   {
@@ -569,7 +569,7 @@ void threshold_imgay(Image2d<T> const& src, T threshold, U true_val, U false_val
 }
 
 template<typename T>
-void export_img(std::string const& file_name, Image2d<T>& img)
+void export_image(std::string const& file_name, Image2d<T>& img)
 {
   std::fstream file(file_name, std::ios::out);
 
