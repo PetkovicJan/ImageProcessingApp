@@ -15,17 +15,17 @@
   for(ptrdiff_t y = 0; y < arr.height(); ++y)
 
 template<typename T>
-class Array2d
+class Image2d
 {
 public:
-  Array2d() = default;
-  explicit Array2d(ptrdiff_t h, ptrdiff_t w);
+  Image2d() = default;
+  explicit Image2d(ptrdiff_t h, ptrdiff_t w);
 
-  Array2d(Array2d<T> const& other) = delete;
-  Array2d(Array2d<T>&& other) = delete;
+  Image2d(Image2d<T> const& other) = delete;
+  Image2d(Image2d<T>&& other) = delete;
 
-  Array2d& operator=(Array2d<T> other) = delete;
-  Array2d& operator=(Array2d<T>&& other) = delete;
+  Image2d& operator=(Image2d<T> other) = delete;
+  Image2d& operator=(Image2d<T>&& other) = delete;
 
   ptrdiff_t width() const;
   ptrdiff_t height() const;
@@ -45,49 +45,49 @@ private:
 };
 
 template<typename T>
-inline Array2d<T>::Array2d(ptrdiff_t h, ptrdiff_t w) : h_(h), w_(w), data_(std::make_unique<T[]>(h * w))
+inline Image2d<T>::Image2d(ptrdiff_t h, ptrdiff_t w) : h_(h), w_(w), data_(std::make_unique<T[]>(h * w))
 {
-  static_assert(std::is_arithmetic_v<T>, "Array2d template type needs to be of arithmetic type.");
+  static_assert(std::is_arithmetic_v<T>, "Image2d template type needs to be of arithmetic type.");
 }
 
 template<typename T>
-inline ptrdiff_t Array2d<T>::width() const
+inline ptrdiff_t Image2d<T>::width() const
 {
   return w_;
 }
 
 template<typename T>
-inline ptrdiff_t Array2d<T>::height() const
+inline ptrdiff_t Image2d<T>::height() const
 {
   return h_;
 }
 
 template<typename T>
-inline T* Array2d<T>::data()
+inline T* Image2d<T>::data()
 {
   return data_.get();
 }
 
 template<typename T>
-inline T const* Array2d<T>::data() const
+inline T const* Image2d<T>::data() const
 {
   return data_.get();
 }
 
 template<typename T>
-inline T& Array2d<T>::operator()(ptrdiff_t y, ptrdiff_t x)
+inline T& Image2d<T>::operator()(ptrdiff_t y, ptrdiff_t x)
 {
   return data_[y * w_ + x];
 }
 
 template<typename T>
-inline T const& Array2d<T>::operator()(ptrdiff_t y, ptrdiff_t x) const
+inline T const& Image2d<T>::operator()(ptrdiff_t y, ptrdiff_t x) const
 {
   return data_[y * w_ + x];
 }
 
 template<typename T>
-inline void Array2d<T>::alloc(ptrdiff_t h, ptrdiff_t w)
+inline void Image2d<T>::alloc(ptrdiff_t h, ptrdiff_t w)
 {
   h_ = h;
   w_ = w;
@@ -95,7 +95,7 @@ inline void Array2d<T>::alloc(ptrdiff_t h, ptrdiff_t w)
 }
 
 template<typename T>
-void fill(Array2d<T>& arr, T val)
+void fill(Image2d<T>& arr, T val)
 {
   foreach2d(arr, y, x)
   {
@@ -104,7 +104,7 @@ void fill(Array2d<T>& arr, T val)
 }
 
 template<typename T, typename U>
-void fill(Array2d<T>& arr, Array2d<U> const& other)
+void fill(Image2d<T>& arr, Image2d<U> const& other)
 {
   foreach2d(arr, y, x)
   {
@@ -113,49 +113,49 @@ void fill(Array2d<T>& arr, Array2d<U> const& other)
 }
 
 template<typename T>
-void add(Array2d<T> const& src1, T src2, Array2d<T>& dst)
+void add(Image2d<T> const& src1, T src2, Image2d<T>& dst)
 {
   foreach2d(dst, y, x)
     dst(y, x) = src1(y, x) + src2;
 }
 
 template<typename T>
-void add(Array2d<T> const& src1, Array2d<T> const& src2, Array2d<T>& dst)
+void add(Image2d<T> const& src1, Image2d<T> const& src2, Image2d<T>& dst)
 {
   foreach2d(dst, y, x)
     dst(y, x) = src1(y, x) + src2(y, x);
 }
 
 template<typename T>
-void sub(Array2d<T> const& src1, T src2, Array2d<T>& dst)
+void sub(Image2d<T> const& src1, T src2, Image2d<T>& dst)
 {
   foreach2d(dst, y, x)
     dst(y, x) = src1(y, x) - src2;
 }
 
 template<typename T>
-void sub(Array2d<T> const& src1, Array2d<T> const& src2, Array2d<T>& dst)
+void sub(Image2d<T> const& src1, Image2d<T> const& src2, Image2d<T>& dst)
 {
   foreach2d(dst, y, x)
     dst(y, x) = src1(y, x) - src2(y, x);
 }
 
 template<typename T>
-void mul(Array2d<T> const& src1, T src2, Array2d<T>& dst)
+void mul(Image2d<T> const& src1, T src2, Image2d<T>& dst)
 {
   foreach2d(dst, y, x)
     dst(y, x) = src1(y, x) * src2;
 }
 
 template<typename T>
-void mul(Array2d<T> const& src1, Array2d<T> const& src2, Array2d<T>& dst)
+void mul(Image2d<T> const& src1, Image2d<T> const& src2, Image2d<T>& dst)
 {
   foreach2d(dst, y, x)
     dst(y, x) = src1(y, x) * src2(y, x);
 }
 
 template<typename T>
-T sum(Array2d<T> const& src)
+T sum(Image2d<T> const& src)
 {
   T sum = T(0);
   foreach2d(src, y, x)
@@ -165,7 +165,7 @@ T sum(Array2d<T> const& src)
 }
 
 template<typename T>
-T min_value(Array2d<T> const& src)
+T min_value(Image2d<T> const& src)
 {
   auto min = src(0, 0);
   foreach2d(src, y, x)
@@ -175,7 +175,7 @@ T min_value(Array2d<T> const& src)
 }
 
 template<typename T>
-T max_value(Array2d<T> const& src)
+T max_value(Image2d<T> const& src)
 {
   auto max = src(0, 0);
   foreach2d(src, y, x)
@@ -191,7 +191,7 @@ enum class BorderCondition {
 };
 
 template<typename T>
-void filter_x(Array2d<T> const& src, T const* kernel, ptrdiff_t kernel_sz, BorderCondition bc, Array2d<T>& dst)
+void filter_x(Image2d<T> const& src, T const* kernel, ptrdiff_t kernel_sz, BorderCondition bc, Image2d<T>& dst)
 {
   // Handle inner pixels (avoiding boundary conditions).
   const ptrdiff_t kernel_radius = kernel_sz / 2;
@@ -319,7 +319,7 @@ void filter_x(Array2d<T> const& src, T const* kernel, ptrdiff_t kernel_sz, Borde
 }
 
 template<typename T>
-void filter_y(Array2d<T> const& src, T const* kernel, ptrdiff_t kernel_sz, BorderCondition bc, Array2d<T>& dst)
+void filter_y(Image2d<T> const& src, T const* kernel, ptrdiff_t kernel_sz, BorderCondition bc, Image2d<T>& dst)
 {
   const ptrdiff_t kernel_radius = kernel_sz / 2;
   for(ptrdiff_t i = kernel_radius; i < src.height() - kernel_radius; ++i)
@@ -446,23 +446,23 @@ void filter_y(Array2d<T> const& src, T const* kernel, ptrdiff_t kernel_sz, Borde
 }
 
 template<typename T>
-void diff_filter_x(Array2d<T> const& src, BorderCondition bc, Array2d<T>& dst)
+void diff_filter_x(Image2d<T> const& src, BorderCondition bc, Image2d<T>& dst)
 {
   T diff_kernel[] = { T(-1), T(0), T(1) };
   filter_x(src, diff_kernel, 3, bc, dst);
 }
 
 template<typename T>
-void diff_filter_y(Array2d<T> const& src, BorderCondition bc, Array2d<T>& dst)
+void diff_filter_y(Image2d<T> const& src, BorderCondition bc, Image2d<T>& dst)
 {
   T diff_kernel[] = { T(-1), T(0), T(1) };
   filter_y(src, diff_kernel, 3, bc, dst);
 }
 
 template<typename T>
-void sobel_x(Array2d<T> const& src, BorderCondition bc, Array2d<T>& dst)
+void sobel_x(Image2d<T> const& src, BorderCondition bc, Image2d<T>& dst)
 {
-  Array2d<T> tmp(src.height(), src.width());
+  Image2d<T> tmp(src.height(), src.width());
 
   T avg_kernel[] = { T(1), T(2), T(1) };
   filter_x(src, avg_kernel, 3, bc, tmp);
@@ -471,9 +471,9 @@ void sobel_x(Array2d<T> const& src, BorderCondition bc, Array2d<T>& dst)
 }
 
 template<typename T>
-void sobel_y(Array2d<T> const& src, BorderCondition bc, Array2d<T>& dst)
+void sobel_y(Image2d<T> const& src, BorderCondition bc, Image2d<T>& dst)
 {
-  Array2d<T> tmp(src.height(), src.width());
+  Image2d<T> tmp(src.height(), src.width());
 
   T avg_kernel[] = { T(1), T(2), T(1) };
   filter_y(src, avg_kernel, 3, bc, tmp);
@@ -482,29 +482,29 @@ void sobel_y(Array2d<T> const& src, BorderCondition bc, Array2d<T>& dst)
 }
 
 template<typename T>
-void box_filter_x(Array2d<T> const& src, ptrdiff_t kernel_radius, BorderCondition bc, Array2d<T>& dst)
+void box_filter_x(Image2d<T> const& src, ptrdiff_t kernel_radius, BorderCondition bc, Image2d<T>& dst)
 {
   const auto kernel_sz = 2 * kernel_radius + 1;
-  Array2d<T> box_kernel(1, kernel_sz);
+  Image2d<T> box_kernel(1, kernel_sz);
   fill(box_kernel, T(1));
 
   filter_x(src, box_kernel.data(), kernel_sz, bc, dst);
 }
 
 template<typename T>
-void box_filter_y(Array2d<T> const& src, ptrdiff_t kernel_radius, BorderCondition bc, Array2d<T>& dst)
+void box_filter_y(Image2d<T> const& src, ptrdiff_t kernel_radius, BorderCondition bc, Image2d<T>& dst)
 {
   const auto kernel_sz = 2 * kernel_radius + 1;
-  Array2d<T> box_kernel(1, kernel_sz);
+  Image2d<T> box_kernel(1, kernel_sz);
   fill(box_kernel, T(1));
 
   filter_y(src, box_kernel.data(), kernel_sz, bc, dst);
 }
 
 template<typename T>
-void box_filter(Array2d<T> const& src, ptrdiff_t kernel_radius_y, ptrdiff_t kernel_radius_x, BorderCondition bc, Array2d<T>& dst)
+void box_filter(Image2d<T> const& src, ptrdiff_t kernel_radius_y, ptrdiff_t kernel_radius_x, BorderCondition bc, Image2d<T>& dst)
 {
-  Array2d<T> tmp(src.height(), src.width());
+  Image2d<T> tmp(src.height(), src.width());
   box_filter_x(src, kernel_radius_x, bc, tmp);
   box_filter_y(tmp, kernel_radius_y, bc, dst);
 }
@@ -512,7 +512,7 @@ void box_filter(Array2d<T> const& src, ptrdiff_t kernel_radius_y, ptrdiff_t kern
 namespace detail
 {
   template<typename T>
-  void create_gauss_kernel(ptrdiff_t kernel_radius, T sigma, Array2d<T>& dst)
+  void create_gauss_kernel(ptrdiff_t kernel_radius, T sigma, Image2d<T>& dst)
   {
     const auto kernel_sz = 2 * kernel_radius + 1;
     const auto factor = T(0.5) / (sigma * sigma);
@@ -530,37 +530,37 @@ namespace detail
 }
 
 template<typename T>
-void gauss_filter_x(Array2d<T> const& src, ptrdiff_t kernel_radius, T sigma, BorderCondition bc, Array2d<T>& dst)
+void gauss_filter_x(Image2d<T> const& src, ptrdiff_t kernel_radius, T sigma, BorderCondition bc, Image2d<T>& dst)
 {
   static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point arrays.");
 
-  Array2d<T> gauss_kernel;
+  Image2d<T> gauss_kernel;
   detail::create_gauss_kernel(kernel_radius, sigma, gauss_kernel);
 
   filter_x(src, gauss_kernel.data(), gauss_kernel.width(), bc, dst);
 }
 
 template<typename T>
-void gauss_filter_y(Array2d<T> const& src, ptrdiff_t kernel_radius, T sigma, BorderCondition bc, Array2d<T>& dst)
+void gauss_filter_y(Image2d<T> const& src, ptrdiff_t kernel_radius, T sigma, BorderCondition bc, Image2d<T>& dst)
 {
   static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point arrays.");
 
-  Array2d<T> gauss_kernel;
+  Image2d<T> gauss_kernel;
   detail::create_gauss_kernel(kernel_radius, sigma, gauss_kernel);
 
   filter_y(src, gauss_kernel.data(), gauss_kernel.width(), bc, dst);
 }
 
 template<typename T>
-void gauss_filter(Array2d<T> const& src, ptrdiff_t kernel_radius_y, ptrdiff_t kernel_radius_x, T sigma_y, T sigma_x, BorderCondition bc, Array2d<T>& dst)
+void gauss_filter(Image2d<T> const& src, ptrdiff_t kernel_radius_y, ptrdiff_t kernel_radius_x, T sigma_y, T sigma_x, BorderCondition bc, Image2d<T>& dst)
 {
-  Array2d<T> tmp(src.height(), src.width());
+  Image2d<T> tmp(src.height(), src.width());
   gauss_filter_x(src, kernel_radius_x, sigma_x, bc, tmp);
   gauss_filter_y(tmp, kernel_radius_y, sigma_y, bc, dst);
 }
 
 template<typename T, typename U>
-void threshold_array(Array2d<T> const& src, T threshold, U true_val, U false_val, Array2d<U>& dst)
+void threshold_array(Image2d<T> const& src, T threshold, U true_val, U false_val, Image2d<U>& dst)
 {
   foreach2d(src, y, x)
   {
@@ -569,7 +569,7 @@ void threshold_array(Array2d<T> const& src, T threshold, U true_val, U false_val
 }
 
 template<typename T>
-void export_arr(std::string const& file_name, Array2d<T>& arr)
+void export_arr(std::string const& file_name, Image2d<T>& arr)
 {
   std::fstream file(file_name, std::ios::out);
 

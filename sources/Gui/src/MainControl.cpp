@@ -4,7 +4,7 @@
 
 namespace detail
 {
-  void create_array2d_from_image(QImage const& img, Array2d<float>& arr)
+  void create_array2d_from_image(QImage const& img, Image2d<float>& arr)
   {
 
   }

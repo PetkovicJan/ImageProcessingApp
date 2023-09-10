@@ -10,5 +10,5 @@ public:
   explicit MainControl(MainWidget* main_widget);
 
 private:
-  Array2d<float> current_img_;
+  Image2d<float> current_img_;
 };
