@@ -155,6 +155,49 @@ TEST(FilterFunctionTest, TestwrapBoundaryConditionInYdir)
   }
 }
 
+TEST(MorphologicalFunctionTest, TestErosion)
+{
+  // Small 5x5 image with 3x3 square in the center.
+  Image2d<int> src(5, 5);
+  fill(src, 0);
+  for (int i = 1; i < 4; ++i)
+    for (int j = 1; j < 4; ++j)
+      src(i, j) = 1;
+
+  Image2d<int> eroded(5, 5);
+  erode(src, 1, eroded);
+  
+  ASSERT_EQ(eroded(2, 2), 1);
+
+  // Set the middle pixels to 0, so we can use the loop below.
+  eroded(2, 2) = 0;
+  foreach2d(eroded, y, x)
+    ASSERT_EQ(eroded(y, x), 0);
+}
+
+TEST(CannyEdgeDetectionTest, AngleBinTest)
+{
+  std::unordered_map<int8_t, double> bin_center_angles = {
+    {0, 0.}, 
+    {1, constants::quarter_pi}, 
+    {2, constants::half_pi}, 
+    {3, constants::half_pi + constants::quarter_pi}
+  };
+
+  std::vector<double> intra_bin_offsets =
+  { -constants::eighth_pi + 1e-4, 0., constants::eighth_pi - 1e-4 };
+
+  for (const auto& [bin, center_angle] : bin_center_angles)
+  {
+    for (auto offset : intra_bin_offsets)
+    {
+      const auto angle = center_angle + offset;
+      const auto calculated_bin = detail::canny_get_angle_bin(angle);
+      ASSERT_EQ(bin, calculated_bin);
+    }
+  }
+}
+
 namespace detail
 {
   template<typename T>
@@ -165,7 +208,6 @@ namespace detail
       const auto dist_sq = pow((y - c_y), 2) + pow((x - c_x), 2);
       dst(y, x) = dist_sq < pow(r, 2) ? T(1) : T(0);
     }
-
   }
 }
 
@@ -177,7 +219,7 @@ TEST(Image2dBasicTest, ExportArray)
   detail::draw_circle(h / 2, w / 2, 50, src);
 
   Image2d<float> gauss(h, w);
-  gauss_filter(src, 10, 10, 3.f, 3.f, BorderCondition::BC_CLAMP, gauss);
+  gauss_filter(src, 1, 1, 1.f, 1.f, BorderCondition::BC_CLAMP, gauss);
 
   Image2d<float> grad_x(h, w);
   sobel_x(src, BorderCondition::BC_CLAMP, grad_x);
@@ -185,8 +227,14 @@ TEST(Image2dBasicTest, ExportArray)
   Image2d<float> grad_y(h, w);
   sobel_y(src, BorderCondition::BC_CLAMP, grad_y);
 
+  const auto lo_thr = 1.f;
+  const auto hi_thr = 2.f;
+  Image2d<unsigned char> canny(h, w);
+  canny_edge_detection(src, lo_thr, hi_thr, canny);
+
   export_image("test_src.ppm", src);
   export_image("test_gauss.ppm", gauss);
   export_image("test_sobel_x.ppm", grad_x);
   export_image("test_sobel_y.ppm", grad_y);
+  export_image("test_canny.ppm", canny);
 }

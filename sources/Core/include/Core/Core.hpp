@@ -14,6 +14,37 @@
 #define foreach_y(img, y) \
   for(ptrdiff_t y = 0; y < img.height(); ++y)
 
+struct Position
+{
+  explicit Position(ptrdiff_t y, ptrdiff_t x) : y(y), x(x) {}
+
+  ptrdiff_t y;
+  ptrdiff_t x;
+
+  Position operator+(Position const& other) const
+  {
+    Position res = *this;
+    res.x += other.x;
+    res.y += other.y;
+
+    return res;
+  }
+
+  Position operator-(Position const& other) const
+  {
+    Position res = *this;
+    res.x -= other.x;
+    res.y -= other.y;
+
+    return res;
+  }
+};
+
+namespace detail
+{
+  bool is_in_range(ptrdiff_t i, ptrdiff_t lo, ptrdiff_t hi);
+}
+
 template<typename T>
 class Image2d
 {
@@ -36,7 +67,20 @@ public:
   T& operator()(ptrdiff_t y, ptrdiff_t x);
   T const& operator()(ptrdiff_t y, ptrdiff_t x) const;
 
+  T& operator()(Position pos);
+  T const& operator()(Position pos) const;
+
   void alloc(ptrdiff_t h, ptrdiff_t w);
+
+  bool isValid(ptrdiff_t y, ptrdiff_t x) const
+  {
+    return detail::is_in_range(y, 0, h_) && detail::is_in_range(x, 0, w_);
+  }
+
+  bool isValid(Position pos) const
+  {
+    return isValid(pos.y, pos.x);
+  }
 
 private:
   ptrdiff_t h_ = 0;
@@ -84,6 +128,18 @@ template<typename T>
 inline T const& Image2d<T>::operator()(ptrdiff_t y, ptrdiff_t x) const
 {
   return data_[y * w_ + x];
+}
+
+template<typename T>
+inline T& Image2d<T>::operator()(Position pos)
+{
+  return data_[pos.y * w_ + pos.x];
+}
+
+template<typename T>
+inline T const& Image2d<T>::operator()(Position pos) const
+{
+  return data_[pos.y * w_ + pos.x];
 }
 
 template<typename T>
@@ -532,7 +588,7 @@ namespace detail
 template<typename T>
 void gauss_filter_x(Image2d<T> const& src, ptrdiff_t kernel_radius, T sigma, BorderCondition bc, Image2d<T>& dst)
 {
-  static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point imgays.");
+  static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point images.");
 
   Image2d<T> gauss_kernel;
   detail::create_gauss_kernel(kernel_radius, sigma, gauss_kernel);
@@ -543,7 +599,7 @@ void gauss_filter_x(Image2d<T> const& src, ptrdiff_t kernel_radius, T sigma, Bor
 template<typename T>
 void gauss_filter_y(Image2d<T> const& src, ptrdiff_t kernel_radius, T sigma, BorderCondition bc, Image2d<T>& dst)
 {
-  static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point imgays.");
+  static_assert(std::is_floating_point_v<T>, "Gauss filter only supports floating point images.");
 
   Image2d<T> gauss_kernel;
   detail::create_gauss_kernel(kernel_radius, sigma, gauss_kernel);
@@ -566,6 +622,176 @@ void threshold_image(Image2d<T> const& src, T threshold, U true_val, U false_val
   {
     dst(y, x) = src(y, x) >= threshold ? true_val : false_val;
   }
+}
+
+template<typename T>
+void erode(Image2d<T> const& src, ptrdiff_t kernel_radius, Image2d<T>& dst)
+{
+  static_assert(std::is_integral_v<T>, "Erosion only supports integral images.");
+
+  const auto kernel_sz = 2 * kernel_radius + 1;
+
+  for (ptrdiff_t i = 0; i < src.height(); ++i)
+  {
+    if (i < kernel_radius || i >= (src.height() - kernel_radius))
+    {
+      for (ptrdiff_t j = 0; j < src.width(); ++j)
+        dst(i, j) = T(0);
+    }
+
+    for (ptrdiff_t j = 0; j < src.width(); ++j)
+    {
+      if (j < kernel_radius || j >= (src.width() - kernel_radius))
+      {
+        dst(i, j) = T(0);
+        continue;
+      }
+
+      ptrdiff_t sum = 0;
+      for(ptrdiff_t ik = - kernel_radius; ik <= kernel_radius; ++ik)
+        for (ptrdiff_t jk = -kernel_radius; jk <= kernel_radius; ++jk)
+        {
+          if (src(i + ik, j + jk))
+            ++sum;
+        }
+
+      if (sum == kernel_sz * kernel_sz)
+        dst(i, j) = T(1);
+      else
+        dst(i, j) = T(0);
+    }
+  }
+}
+
+namespace constants
+{
+  constexpr const double pi = 3.14159265359;
+  constexpr const double two_pi = pi * 2.;
+  constexpr const double half_pi = pi / 2.;
+  constexpr const double quarter_pi = pi / 4.;
+  constexpr const double eighth_pi = pi / 8.;
+}
+
+namespace detail
+{
+  ptrdiff_t clamp_index(ptrdiff_t index, ptrdiff_t size);
+
+  int8_t canny_get_angle_bin(double angle);
+
+  template<typename T>
+  void non_max_suppression(Image2d<T> const& grad, Image2d<int8_t> const& dirs, Image2d<unsigned char>& dst)
+  {
+    const auto w = grad.width();
+    const auto h = grad.height();
+
+    foreach2d(grad, y, x)
+    {
+      auto prev_x = x;
+      auto prev_y = y;
+
+      auto next_x = x;
+      auto next_y = y;
+
+      const auto dir = dirs(y, x);
+      switch (dir)
+      {
+      case 0:
+      {
+        prev_x = x - 1;
+        next_x = x + 1;
+      }
+      break;
+      case 1:
+      {
+        prev_x = x - 1;
+        prev_y = y - 1;
+
+        next_x = x + 1;
+        next_y = y + 1;
+      }
+      break;
+      case 2:
+      {
+        prev_y = y - 1;
+        next_y = y + 1;
+      }
+      break;
+      case 3:
+      {
+        prev_x = x + 1;
+        prev_y = y - 1;
+
+        next_x = x - 1;
+        next_y = y + 1;
+      }
+      break;
+      }
+
+      // Clamp indices.
+      prev_x = clamp_index(prev_x, w);
+      prev_y = clamp_index(prev_y, h);
+
+      next_x = clamp_index(next_x, w);
+      next_y = clamp_index(next_y, h);
+      
+      // Non-max suppression.
+      const auto curr_val = grad(y, x);
+      const auto prev_val = grad(prev_y, prev_x);
+      const auto next_val = grad(next_y, next_x);
+      if (curr_val > prev_val && curr_val >= next_val)
+      {
+        dst(y, x) = 1;
+      }
+      else
+      {
+        dst(y, x) = 0;
+      }
+    }
+  }
+
+  void hysteresis_edge_tracking(Image2d<unsigned char>& dst);
+}
+
+template<typename T>
+void canny_edge_detection(Image2d<T> const& src, T low_threshold, T high_threshold, Image2d<unsigned char>& dst)
+{
+  const auto w = src.width();
+  const auto h = src.height();
+
+  Image2d<T> grad_x(h, w);
+  sobel_x(src, BorderCondition::BC_CLAMP, grad_x);
+
+  Image2d<T> grad_y(h, w);
+  sobel_y(src, BorderCondition::BC_CLAMP, grad_y);
+
+  Image2d<T> grad_sq(h, w);
+  Image2d<int8_t> directions(h, w);
+  foreach2d(src, y, x)
+  {
+    const auto gx = grad_x(y, x);
+    const auto gy = grad_y(y, x);
+
+    grad_sq(y, x) = gx * gx + gy * gy;
+
+    const double angle = (gx == T(0)) ? constants::half_pi : atan2(gy, gx);
+    directions(y, x) = detail::canny_get_angle_bin(angle);
+  }
+
+  detail::non_max_suppression(grad_sq, directions, dst);
+
+  // Threshold application.
+  const auto lo_sq = low_threshold * low_threshold;
+  const auto hi_sq = high_threshold * high_threshold;
+  foreach2d(dst, y, x)
+  {
+    if (dst(y, x) == 1)
+    {
+      const auto val_sq = grad_sq(y, x);
+      dst(y, x) = val_sq < lo_sq ? 0 : (val_sq < hi_sq ? 1 : 2);
+    }
+  }
+
+  detail::hysteresis_edge_tracking(dst);
 }
 
 template<typename T>
