@@ -15,7 +15,9 @@ MainControl::MainControl(MainWidget* main_widget)
   QObject::connect(main_widget, &MainWidget::loadClicked, [this, main_widget]()
     {
       const auto image_name = QFileDialog::getOpenFileName(
-        main_widget, "Load Image", "/home", "Images (*.png *.jpg)");
+        main_widget, "Load Image", "/home", "Images (*.png *.jpg *.ppm)");
+
+      if (image_name.isNull()) return;
 
       QImage img;
       img.load(image_name);
