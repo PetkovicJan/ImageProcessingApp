@@ -52,15 +52,17 @@ class Image2d
 public:
   Image2d() = default;
   explicit Image2d(ptrdiff_t h, ptrdiff_t w);
+  explicit Image2d(Position const& sz);
 
   Image2d(Image2d<T> const& other) = delete;
-  Image2d(Image2d<T>&& other) = delete;
+  Image2d(Image2d<T>&& other);
 
-  Image2d& operator=(Image2d<T> other) = delete;
-  Image2d& operator=(Image2d<T>&& other) = delete;
+  Image2d& operator=(Image2d<T> const& other) = delete;
+  Image2d& operator=(Image2d<T>&& other);
 
   ptrdiff_t width() const;
   ptrdiff_t height() const;
+  Position size() const;
 
   T* data();
   T const * data() const;
@@ -72,6 +74,7 @@ public:
   T const& operator()(Position pos) const;
 
   void alloc(ptrdiff_t h, ptrdiff_t w);
+  void alloc(Position const& sz);
 
   bool isValid(ptrdiff_t y, ptrdiff_t x) const
   {
@@ -96,6 +99,28 @@ inline Image2d<T>::Image2d(ptrdiff_t h, ptrdiff_t w) : h_(h), w_(w), data_(std::
 }
 
 template<typename T>
+inline Image2d<T>::Image2d(Position const& sz) : Image2d<T>(sz.y, sz.x) {}
+
+template<typename T>
+inline Image2d<T>::Image2d(Image2d<T>&& other)
+{
+  *this = std::move(other);
+}
+
+template<typename T>
+inline Image2d<T>& Image2d<T>::operator=(Image2d<T>&& other)
+{
+  h_ = other.h_;
+  w_ = other.w_;
+  data_ = std::move(other.data_);
+
+  other.h_ = 0;
+  other.w_ = 0;
+
+  return *this;
+}
+
+template<typename T>
 inline ptrdiff_t Image2d<T>::width() const
 {
   return w_;
@@ -105,6 +130,12 @@ template<typename T>
 inline ptrdiff_t Image2d<T>::height() const
 {
   return h_;
+}
+
+template<typename T>
+inline Position Image2d<T>::size() const
+{
+  return Position(h_, w_);
 }
 
 template<typename T>
@@ -149,6 +180,12 @@ inline void Image2d<T>::alloc(ptrdiff_t h, ptrdiff_t w)
   h_ = h;
   w_ = w;
   data_ = std::make_unique<T[]>(h * w);
+}
+
+template<typename T>
+inline void Image2d<T>::alloc(Position const& sz)
+{
+  alloc(sz.y, sz.x);
 }
 
 template<typename T>

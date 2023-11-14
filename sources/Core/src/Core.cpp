@@ -1,6 +1,7 @@
 #include <Core/Core.hpp>
 
 #include <vector>
+#include <utility>
 
 namespace detail
 {
@@ -87,11 +88,24 @@ void OperationChain::executeChain(Image2d<float> const& in, Image2d<float>& out)
   if (chain_.size() == 0)
   {
     fill(out, in);
-    return;
   }
   else if (chain_.size() == 1)
   {
     chain_.front()->perform(in, out);
-    return;
+  }
+  else
+  {
+    Image2d<float> tmp1(in.size());
+    fill(tmp1, in);
+
+    Image2d<float> tmp2(in.size());
+
+    for (auto& op : chain_)
+    {
+      op->perform(tmp1, tmp2);
+      std::swap(tmp1, tmp2);
+    }
+
+    out = std::move(tmp1);
   }
 }
