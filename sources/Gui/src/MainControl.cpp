@@ -19,7 +19,7 @@ namespace detail
       foreach_x(img, x)
       {
         const auto& rgb = row[x];
-        img(y, x) = qGray(rgb);
+        img(y, x) = 0.333333f * float(qRed(rgb) + qGreen(rgb) + qBlue(rgb));
       }
     }
   }
@@ -36,10 +36,8 @@ namespace detail
       const auto row = reinterpret_cast<QRgb*>(qimg.scanLine(y));
       foreach_x(img, x)
       {
-        const auto val = img(y, x);
-        QColor color;
-        color.setRgbF(val, val, val);
-        row[x] = color.rgb();
+        const auto val = int(img(y, x));
+        row[x] = qRgb(val, val, val);
       }
     }
 
@@ -62,5 +60,25 @@ MainControl::MainControl(MainWidget* main_widget)
       detail::create_image2d_from_qimage(loaded_img, current_img_);
 
       main_widget->setImage(QPixmap::fromImage(loaded_img));
+    });
+
+    QObject::connect(main_widget, &MainWidget::filterOpAdded,
+    [this](FilterConfig const& config)
+    {
+      this->op_chain_.addOperation(std::make_unique<FilterOp>(
+        config.kernel_radius_x,
+        config.kernel_radius_y,
+        config.sigma_x,
+        config.sigma_y));
+    });
+
+  QObject::connect(main_widget, &MainWidget::executeClicked, 
+    [this, main_widget]() 
+    {
+      Image2d<float> result(current_img_.height(), current_img_.width());
+      this->op_chain_.executeChain(current_img_, result);
+
+      const auto qimg = detail::create_qimage_from_image2d(result);
+      main_widget->setImage(QPixmap::fromImage(qimg));
     });
 }

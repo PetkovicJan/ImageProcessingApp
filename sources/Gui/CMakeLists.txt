@@ -26,3 +26,17 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # Configure Qt moc.
 set_target_properties(${PROJECT_NAME} PROPERTIES AUTOMOC TRUE AUTORCC TRUE)
+
+# Add test.
+set(TEST_INCLUDE_FILES 
+	${INCLUDE_DIR}/MainWidget.hpp
+	${INCLUDE_DIR}/MainControl.hpp)
+
+set(TEST_SRC_FILES 
+  ${SRC_DIR}/MainWidget.cpp
+  ${SRC_DIR}/MainControl.cpp)
+
+add_executable(gui_test test/test.cpp ${TEST_INCLUDE_FILES} ${TEST_SRC_FILES})
+target_include_directories(gui_test PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(gui_test PUBLIC ${LIBS} PRIVATE GTest::gtest_main)
+set_target_properties(gui_test PROPERTIES AUTOMOC TRUE AUTORCC TRUE)

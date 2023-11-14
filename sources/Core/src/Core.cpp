@@ -66,3 +66,32 @@ namespace detail
     }
   }
 }
+
+FilterOp::FilterOp(ptrdiff_t kernel_radius_x, ptrdiff_t kernel_radius_y, float sigma_x, float sigma_y) :
+  kernel_radius_x_(kernel_radius_x), kernel_radius_y_(kernel_radius_y), sigma_x_(sigma_x), sigma_y_(sigma_y)
+{
+}
+
+void FilterOp::perform(Image2d<float> const& in, Image2d<float>& out) const
+{
+  gauss_filter(in, kernel_radius_y_, kernel_radius_x_, sigma_y_, sigma_x_, BorderCondition::BC_CLAMP, out);
+}
+
+void OperationChain::addOperation(std::unique_ptr<Operation> op)
+{
+  chain_.emplace_back(std::move(op));
+}
+
+void OperationChain::executeChain(Image2d<float> const& in, Image2d<float>& out) const
+{
+  if (chain_.size() == 0)
+  {
+    fill(out, in);
+    return;
+  }
+  else if (chain_.size() == 1)
+  {
+    chain_.front()->perform(in, out);
+    return;
+  }
+}

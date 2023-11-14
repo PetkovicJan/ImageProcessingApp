@@ -219,7 +219,7 @@ TEST(Image2dBasicTest, ExportArray)
   detail::draw_circle(h / 2, w / 2, 50, src);
 
   Image2d<float> gauss(h, w);
-  gauss_filter(src, 1, 1, 1.f, 1.f, BorderCondition::BC_CLAMP, gauss);
+  gauss_filter(src, 6, 6, 2.f, 2.f, BorderCondition::BC_CLAMP, gauss);
 
   Image2d<float> grad_x(h, w);
   sobel_x(src, BorderCondition::BC_CLAMP, grad_x);

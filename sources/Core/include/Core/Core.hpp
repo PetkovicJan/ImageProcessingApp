@@ -3,6 +3,7 @@
 #include <memory>
 #include <type_traits>
 #include <fstream>
+#include <vector>
 
 #define foreach2d(img, y, x) \
   for(ptrdiff_t y = 0; y < img.height(); ++y) \
@@ -813,3 +814,36 @@ void export_image(std::string const& file_name, Image2d<T>& img)
  
   file.close();
 }
+
+class Operation
+{
+public:
+  virtual ~Operation() {}
+
+  virtual void perform(Image2d<float> const& in, Image2d<float>& out) const = 0;
+};
+
+class FilterOp : public Operation
+{
+public:
+  FilterOp(ptrdiff_t kernel_radius_x, ptrdiff_t kernel_radius_y, float sigma_x, float sigma_y);
+
+  void perform(Image2d<float> const& in, Image2d<float>& out) const override;
+
+private:
+  ptrdiff_t kernel_radius_x_;
+  ptrdiff_t kernel_radius_y_;
+  float sigma_x_;
+  float sigma_y_;
+};
+
+class OperationChain
+{
+public:
+  void addOperation(std::unique_ptr<Operation> op);
+
+  void executeChain(Image2d<float> const& in, Image2d<float>& out) const;
+
+private:
+  std::vector<std::unique_ptr<Operation>> chain_;
+};
