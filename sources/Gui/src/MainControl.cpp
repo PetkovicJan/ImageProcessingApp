@@ -62,6 +62,15 @@ MainControl::MainControl(MainWidget* main_widget)
       main_widget->setImage(QPixmap::fromImage(loaded_img));
     });
 
+    QObject::connect(main_widget, &MainWidget::thresholdOpAdded,
+    [this](ThresholdConfig const& config)
+    {
+        this->op_chain_.addOperation(std::make_unique<ThresholdOp>(
+          config.thresh,
+          config.true_val,
+          config.false_val));
+    });
+    
     QObject::connect(main_widget, &MainWidget::filterOpAdded,
     [this](FilterConfig const& config)
     {

@@ -860,6 +860,19 @@ public:
   virtual void perform(Image2d<float> const& in, Image2d<float>& out) const = 0;
 };
 
+class ThresholdOp : public Operation
+{
+public:
+  ThresholdOp(float threshold, float true_val, float false_val); 
+
+  void perform(Image2d<float> const& in, Image2d<float>& out) const override;
+
+private:
+  float thresh_;
+  float true_val_;
+  float false_val_;
+};
+
 class FilterOp : public Operation
 {
 public:

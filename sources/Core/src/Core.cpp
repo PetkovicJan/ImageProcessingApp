@@ -68,6 +68,16 @@ namespace detail
   }
 }
 
+ThresholdOp::ThresholdOp(float threshold, float true_val, float false_val) :
+  thresh_(threshold), true_val_(true_val), false_val_(false_val) 
+{
+}
+
+void ThresholdOp::perform(Image2d<float> const& in, Image2d<float>& out) const
+{
+  threshold_image(in, thresh_, true_val_, false_val_, out);
+}
+
 FilterOp::FilterOp(ptrdiff_t kernel_radius_x, ptrdiff_t kernel_radius_y, float sigma_x, float sigma_y) :
   kernel_radius_x_(kernel_radius_x), kernel_radius_y_(kernel_radius_y), sigma_x_(sigma_x), sigma_y_(sigma_y)
 {

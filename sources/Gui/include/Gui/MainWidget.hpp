@@ -4,6 +4,27 @@
 #include <QGraphicsView>
 #include <QVBoxLayout>
 
+struct ThresholdConfig
+{
+  float thresh;
+  float true_val;
+  float false_val;
+};
+
+class ThresholdConfigWidget : public QWidget
+{
+  Q_OBJECT
+
+public:
+  ThresholdConfigWidget(QWidget* parent = nullptr);
+
+signals:
+  void configurationChanged(ThresholdConfig const& config);
+
+private:
+  ThresholdConfig config_;
+};
+
 struct FilterConfig
 {
   ptrdiff_t kernel_radius_x;
@@ -38,7 +59,10 @@ public:
 
 signals:
   void loadClicked();
+
+  void thresholdOpAdded(ThresholdConfig const& config);
   void filterOpAdded(FilterConfig const& config);
+
   void executeClicked();
 
 private:
@@ -49,5 +73,7 @@ private:
   QVBoxLayout* op_list_layout_ = nullptr;
 
   QString current_op_;
+
+  ThresholdConfig threshold_config_;
   FilterConfig filter_config_;
 };
