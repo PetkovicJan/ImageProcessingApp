@@ -1,11 +1,5 @@
 #include <Gui/OpConfigWidgets.hpp>
 
-#include <QLocale>
-#include <QLabel>
-#include <QLineEdit>
-#include <QValidator>
-#include <QGridLayout>
-
 ThresholdConfigWidget::ThresholdConfigWidget(QWidget* parent) : QWidget(parent)
 {
   auto validator = new QDoubleValidator(0.0, 255.0, 2, this);
@@ -117,4 +111,10 @@ FilterConfigWidget::FilterConfigWidget(QWidget* parent) : QWidget(parent)
       this->config_.sigma_y = sigma_y_edit->text().toDouble();
       emit this->configurationChanged(config_);
     });
+}
+
+FormWidget::FormWidget()
+{
+  layout_ = new QGridLayout();
+  this->setLayout(layout_);
 }
