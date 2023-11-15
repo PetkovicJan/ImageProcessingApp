@@ -17,7 +17,7 @@ class FormWidget : public QWidget
   Q_OBJECT
 
 public:
-  FormWidget();
+  FormWidget(QWidget* parent = nullptr);
 
   template<typename EntryT>
   void addEntry(QString const& prompt, EntryT* val_ptr)
@@ -31,9 +31,9 @@ public:
 
     QObject::connect(entry_edit, &QLineEdit::editingFinished, [this, entry_edit, val_ptr]() 
       {
-        if (const auto new_val = get_val_helper<EntryT>(entry_edit->text()))
+        if (const auto opt_val = get_val_helper<EntryT>(entry_edit->text()))
         {
-          *val_ptr = new_val;
+          *val_ptr = opt_val.value();
 
           emit this->entryChanged();
         }
@@ -51,15 +51,15 @@ private:
     bool ok = false;
 
     T val;
-    if constexpr (std::is_same<T, int>)
+    if constexpr (std::is_integral_v<T>)
     {
       val = locale.toInt(str, &ok);
     }
-    else if constexpr (std::is_same<T, float>)
+    else if constexpr (std::is_same_v<T, float>)
     {
       val = locale.toFloat(str, &ok);
     }
-    else if constexpr (std::is_same<T, double>)
+    else if constexpr (std::is_same_v<T, double>)
     {
       val = locale.toDouble(str, &ok);
     }
