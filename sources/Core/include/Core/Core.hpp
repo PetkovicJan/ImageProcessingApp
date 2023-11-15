@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Core/OpConfigDefines.hpp>
+
 #include <memory>
 #include <type_traits>
 #include <fstream>
@@ -863,28 +865,23 @@ public:
 class ThresholdOp : public Operation
 {
 public:
-  ThresholdOp(float threshold, float true_val, float false_val); 
+  ThresholdOp(ThresholdConfig const& config); 
 
   void perform(Image2d<float> const& in, Image2d<float>& out) const override;
 
 private:
-  float thresh_;
-  float true_val_;
-  float false_val_;
+  ThresholdConfig config_;
 };
 
 class FilterOp : public Operation
 {
 public:
-  FilterOp(ptrdiff_t kernel_radius_x, ptrdiff_t kernel_radius_y, float sigma_x, float sigma_y);
+  FilterOp(FilterConfig const& config);
 
   void perform(Image2d<float> const& in, Image2d<float>& out) const override;
 
 private:
-  ptrdiff_t kernel_radius_x_;
-  ptrdiff_t kernel_radius_y_;
-  float sigma_x_;
-  float sigma_y_;
+  FilterConfig config_;
 };
 
 class OperationChain

@@ -65,20 +65,13 @@ MainControl::MainControl(MainWidget* main_widget)
     QObject::connect(main_widget, &MainWidget::thresholdOpAdded,
     [this](ThresholdConfig const& config)
     {
-        this->op_chain_.addOperation(std::make_unique<ThresholdOp>(
-          config.thresh,
-          config.true_val,
-          config.false_val));
+        this->op_chain_.addOperation(std::make_unique<ThresholdOp>(config));
     });
     
     QObject::connect(main_widget, &MainWidget::filterOpAdded,
     [this](FilterConfig const& config)
     {
-      this->op_chain_.addOperation(std::make_unique<FilterOp>(
-        config.kernel_radius_x,
-        config.kernel_radius_y,
-        config.sigma_x,
-        config.sigma_y));
+      this->op_chain_.addOperation(std::make_unique<FilterOp>(config));
     });
 
   QObject::connect(main_widget, &MainWidget::executeClicked, 

@@ -68,24 +68,19 @@ namespace detail
   }
 }
 
-ThresholdOp::ThresholdOp(float threshold, float true_val, float false_val) :
-  thresh_(threshold), true_val_(true_val), false_val_(false_val) 
-{
-}
+ThresholdOp::ThresholdOp(ThresholdConfig const& config) : config_(config) {}
 
 void ThresholdOp::perform(Image2d<float> const& in, Image2d<float>& out) const
 {
-  threshold_image(in, thresh_, true_val_, false_val_, out);
+  threshold_image(in, config_.thresh, config_.true_val, config_.false_val, out);
 }
 
-FilterOp::FilterOp(ptrdiff_t kernel_radius_x, ptrdiff_t kernel_radius_y, float sigma_x, float sigma_y) :
-  kernel_radius_x_(kernel_radius_x), kernel_radius_y_(kernel_radius_y), sigma_x_(sigma_x), sigma_y_(sigma_y)
-{
-}
+FilterOp::FilterOp(FilterConfig const& config) : config_(config) {}
 
 void FilterOp::perform(Image2d<float> const& in, Image2d<float>& out) const
 {
-  gauss_filter(in, kernel_radius_y_, kernel_radius_x_, sigma_y_, sigma_x_, BorderCondition::BC_CLAMP, out);
+  gauss_filter(in, config_.kernel_radius_y, config_.kernel_radius_x, 
+    config_.sigma_y, config_.sigma_x, BorderCondition::BC_CLAMP, out);
 }
 
 void OperationChain::addOperation(std::unique_ptr<Operation> op)

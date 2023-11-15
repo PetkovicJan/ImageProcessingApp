@@ -8,7 +8,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME})
 set(INCLUDE_FILES 
-	${INCLUDE_DIR}/Core.hpp)
+	${INCLUDE_DIR}/Core.hpp
+	${INCLUDE_DIR}/OpConfigDefines.hpp)
 
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(SRC_FILES 

@@ -1,15 +1,10 @@
 #pragma once
 
+#include <Core/OpConfigDefines.hpp>
+
 #include <QWidget>
 #include <QGraphicsView>
 #include <QVBoxLayout>
-
-struct ThresholdConfig
-{
-  float thresh;
-  float true_val;
-  float false_val;
-};
 
 class ThresholdConfigWidget : public QWidget
 {
@@ -23,15 +18,6 @@ signals:
 
 private:
   ThresholdConfig config_;
-};
-
-struct FilterConfig
-{
-  ptrdiff_t kernel_radius_x;
-  ptrdiff_t kernel_radius_y;
-
-  float sigma_x;
-  float sigma_y;
 };
 
 class FilterConfigWidget : public QWidget
