@@ -20,10 +20,14 @@ public:
   FormWidget(QWidget* parent = nullptr);
 
   template<typename EntryT>
-  void addEntry(QString const& prompt, EntryT* val_ptr)
+  void addEntry(QString const& prompt, EntryT* val_ptr, QValidator* validator = nullptr)
   {
     auto entry_label = new QLabel(prompt);
     auto entry_edit = new QLineEdit();
+    if (validator)
+    {
+      entry_edit->setValidator(validator);
+    }
 
     layout_->addWidget(entry_label, current_entry_idx_, 0);
     layout_->addWidget(entry_edit, current_entry_idx_, 1);
