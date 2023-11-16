@@ -28,7 +28,6 @@ private:
 
   QGraphicsView* display_ = nullptr;
   QVBoxLayout* op_config_layout_ = nullptr;
-  QVBoxLayout* op_list_layout_ = nullptr;
 
   QString current_op_;
 

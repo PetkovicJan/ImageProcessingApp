@@ -1,5 +1,6 @@
 #include <Gui/MainWidget.hpp>
 #include <Gui/OpConfigWidgets.hpp>
+#include <Gui/OpListWidget.hpp>
 
 #include <QLabel>
 #include <QToolBar>
@@ -51,8 +52,7 @@ MainWidget::MainWidget()
 
   op_config_layout_ = new QVBoxLayout();
 
-  auto op_list_label = new QLabel("Operation List:");
-  op_list_layout_ = new QVBoxLayout();
+  auto op_list_widget = new OpListWidget();
 
   // Configure layout.
   auto full_layout = new QVBoxLayout();
@@ -71,8 +71,7 @@ MainWidget::MainWidget()
   ops_layout->addWidget(select_op_combo);
   ops_layout->addLayout(op_config_layout_);
   ops_layout->addWidget(add_op_button);
-  ops_layout->addWidget(op_list_label);
-  ops_layout->addLayout(op_list_layout_);
+  ops_layout->addWidget(op_list_widget);
   ops_layout->addWidget(execute_button);
   ops_layout->addStretch();
 
@@ -92,21 +91,17 @@ MainWidget::MainWidget()
       this->handleNewOpearation(new_op_name);
     });
 
-  QObject::connect(add_op_button, &QPushButton::clicked, [this]() 
+  QObject::connect(add_op_button, &QPushButton::clicked, [this, op_list_widget]() 
     {
+      op_list_widget->addOperation(current_op_);
+
       if (current_op_ == QString("Threshold"))
       {
-        auto thresh_label = new QLabel(current_op_);
-        op_list_layout_->addWidget(thresh_label);
-
         emit thresholdOpAdded(threshold_config_);
 
       }
       else if (current_op_ == QString("Filter"))
       {
-        auto filter_label = new QLabel(current_op_);
-        op_list_layout_->addWidget(filter_label);
-
         emit filterOpAdded(filter_config_);
       }
     });
