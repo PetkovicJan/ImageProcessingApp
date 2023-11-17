@@ -36,8 +36,7 @@ MainWidget::MainWidget()
   auto load_action = toolbar->addAction("Load");
   auto save_action = toolbar->addAction("Save");
 
-  display_ = new QGraphicsView();
-  display_->setScene(new QGraphicsScene(this));
+  image_view_ = new ImageView();
 
   auto configure_op_label = new QLabel("Configure Operation");
   auto select_op_combo = new QComboBox();
@@ -64,7 +63,7 @@ MainWidget::MainWidget()
   full_layout->addLayout(main_layout);
 
   auto ops_layout = new QVBoxLayout();
-  main_layout->addWidget(display_, 4);
+  main_layout->addWidget(image_view_, 4);
   main_layout->addLayout(ops_layout, 1);
 
   ops_layout->addWidget(configure_op_label);
@@ -112,9 +111,7 @@ MainWidget::MainWidget()
 
 void MainWidget::setImage(QPixmap img)
 {
-  display_->scene()->clear();
-  display_->scene()->addPixmap(img);
-  display_->fitInView(display_->sceneRect(), Qt::KeepAspectRatio);
+  image_view_->setImage(img);
 }
 
 void MainWidget::onOperationSelected(QString const& new_op)

@@ -7,6 +7,7 @@ find_package(Qt5 COMPONENTS REQUIRED Core Widgets)
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include/${PROJECT_NAME})
 set(INCLUDE_FILES 
 	${INCLUDE_DIR}/MainWidget.hpp
+	${INCLUDE_DIR}/ImageDisplayWidget.hpp
 	${INCLUDE_DIR}/MainControl.hpp
 	${INCLUDE_DIR}/OpConfigWidgets.hpp
 	${INCLUDE_DIR}/OpListWidget.hpp)
@@ -15,6 +16,7 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(SRC_FILES 
   ${SRC_DIR}/MainGui.cpp
   ${SRC_DIR}/MainWidget.cpp
+  ${SRC_DIR}/ImageDisplayWidget.cpp
   ${SRC_DIR}/MainControl.cpp
   ${SRC_DIR}/OpConfigWidgets.cpp
   ${SRC_DIR}/OpListWidget.cpp)

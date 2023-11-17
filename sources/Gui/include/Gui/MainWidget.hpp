@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Gui/ImageDisplayWidget.hpp>
+
 #include <Core/OpConfigDefines.hpp>
 
 #include <QWidget>
@@ -26,7 +28,7 @@ signals:
 private:
   void onOperationSelected(QString const& new_op);
 
-  QGraphicsView* display_ = nullptr;
+  ImageView* image_view_ = nullptr;
   QVBoxLayout* op_config_layout_ = nullptr;
 
   // Currently active operation and corresponding configuration.
