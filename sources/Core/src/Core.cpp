@@ -66,6 +66,19 @@ namespace detail
       }
     }
   }
+
+  struct OpCreator
+  {
+    std::unique_ptr<Operation> operator()(ThresholdConfig const& config)
+    {
+      return std::make_unique<ThresholdOp>(config);
+    }
+
+    std::unique_ptr<Operation> operator()(FilterConfig const& config)
+    {
+      return std::make_unique<FilterOp>(config);
+    }
+  };
 }
 
 ThresholdOp::ThresholdOp(ThresholdConfig const& config) : config_(config) {}
@@ -83,9 +96,20 @@ void FilterOp::perform(Image2d<float> const& in, Image2d<float>& out) const
     config_.sigma_y, config_.sigma_x, BorderCondition::BC_CLAMP, out);
 }
 
-void OperationChain::addOperation(std::unique_ptr<Operation> op)
+void OperationChain::addOperation(int op_id, OpConfig const& config)
 {
-  chain_.emplace_back(std::move(op));
+  chain_.emplace_back(op_id, std::visit(detail::OpCreator{}, config));
+}
+
+void OperationChain::operationModified(int op_id, OpConfig const& config)
+{
+  if (auto op_it = std::find_if(chain_.begin(), chain_.end(), [op_id](auto const& el) 
+    {
+      return el.first == op_id;
+    }); op_it != chain_.end())
+  {
+    op_it->second = std::visit(detail::OpCreator{}, config);
+  }
 }
 
 void OperationChain::executeChain(Image2d<float> const& in, Image2d<float>& out) const
@@ -96,7 +120,7 @@ void OperationChain::executeChain(Image2d<float> const& in, Image2d<float>& out)
   }
   else if (chain_.size() == 1)
   {
-    chain_.front()->perform(in, out);
+    chain_.front().second->perform(in, out);
   }
   else
   {
@@ -105,7 +129,7 @@ void OperationChain::executeChain(Image2d<float> const& in, Image2d<float>& out)
 
     Image2d<float> tmp2(in.size());
 
-    for (auto& op : chain_)
+    for (auto& [id, op] : chain_)
     {
       op->perform(tmp1, tmp2);
       std::swap(tmp1, tmp2);

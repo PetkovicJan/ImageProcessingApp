@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Core/OpConfigDefines.hpp>
+
 #include <QWidget>
 #include <QLayout>
 
@@ -10,8 +12,14 @@ class OpListWidget : public QWidget
 public:
   OpListWidget(QWidget* parent = nullptr);
 
-  void addOperation(QString const& operation);
+  // Adds operation to the list and returns its unique ID.
+  int addOperation(QString const& operation);
+
+signals:
+  void configChanged(int op_id, OpConfig const& config);
 
 private:
   QLayout* op_list_layout_ = nullptr;
+
+  int current_op_id_ = 0;
 };

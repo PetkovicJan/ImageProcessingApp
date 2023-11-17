@@ -887,10 +887,13 @@ private:
 class OperationChain
 {
 public:
-  void addOperation(std::unique_ptr<Operation> op);
+  void addOperation(int op_id, OpConfig const& config);
+
+  void operationModified(int op_id, OpConfig const& config);
 
   void executeChain(Image2d<float> const& in, Image2d<float>& out) const;
 
 private:
-  std::vector<std::unique_ptr<Operation>> chain_;
+  // Chain of operations with corresponding unique IDs.
+  std::vector<std::pair<int, std::unique_ptr<Operation>>> chain_;
 };

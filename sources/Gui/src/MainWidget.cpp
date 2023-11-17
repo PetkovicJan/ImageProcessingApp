@@ -88,25 +88,23 @@ MainWidget::MainWidget()
 
   QObject::connect(select_op_combo, &QComboBox::currentTextChanged, [this](QString const& new_op_name) 
     {
-      this->handleNewOpearation(new_op_name);
+      this->onOperationSelected(new_op_name);
     });
 
   QObject::connect(add_op_button, &QPushButton::clicked, [this, op_list_widget]() 
     {
-      op_list_widget->addOperation(current_op_);
+      const auto op_id = op_list_widget->addOperation(current_op_);
 
-      if (current_op_ == QString("Threshold"))
-      {
-        emit thresholdOpAdded(threshold_config_);
-
-      }
-      else if (current_op_ == QString("Filter"))
-      {
-        emit filterOpAdded(filter_config_);
-      }
+      emit opAdded(op_id, current_op_config_);
     });
 
-  QObject::connect(execute_button, &QPushButton::clicked, [this]() 
+  QObject::connect(op_list_widget, &OpListWidget::configChanged,
+    [this](int op_id, OpConfig const& config)
+    {
+      emit opChanged(op_id, config);
+    });
+
+  QObject::connect(execute_button, &QPushButton::clicked, [this]()
     {
       emit this->executeClicked();
     });
@@ -119,38 +117,31 @@ void MainWidget::setImage(QPixmap img)
   display_->fitInView(display_->sceneRect(), Qt::KeepAspectRatio);
 }
 
-void MainWidget::handleNewOpearation(QString const& new_op)
+void MainWidget::onOperationSelected(QString const& new_op)
 {
   // Store currently selected operation.
   current_op_ = new_op;
 
-  detail::clear_layout(op_config_layout_);
-
-  QWidget* op_config_widget = nullptr;
+  OpConfigWidget* op_config_widget = nullptr;
   if (new_op == QString("Threshold"))
   {
-    auto threshold_config_widget = new ThresholdConfigWidget();
-    QObject::connect(threshold_config_widget, &ThresholdConfigWidget::configurationChanged,
-      [this](ThresholdConfig const& config) 
-      {
-        this->threshold_config_ = config;
-      });
-    op_config_widget = threshold_config_widget;
+    op_config_widget = new ThresholdConfigWidget();
   }
   else if (new_op == QString("Filter"))
   {
-    auto filter_config_widget = new FilterConfigWidget();
-    QObject::connect(filter_config_widget, &FilterConfigWidget::configurationChanged,
-      [this](FilterConfig const& config) 
-      {
-        this->filter_config_ = config;
-      });
-    op_config_widget = filter_config_widget;
+    op_config_widget = new FilterConfigWidget();
   }
   else
   {
     throw std::runtime_error(std::string("Selected operation not supported: ") + new_op.toStdString());
   }
 
+  QObject::connect(op_config_widget, &OpConfigWidget::configurationChanged,
+    [this](OpConfig const& config)
+    {
+      this->current_op_config_ = config;
+    });
+
+  detail::clear_layout(op_config_layout_);
   op_config_layout_->addWidget(op_config_widget);
 }

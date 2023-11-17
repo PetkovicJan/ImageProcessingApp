@@ -18,19 +18,18 @@ public:
 signals:
   void loadClicked();
 
-  void thresholdOpAdded(ThresholdConfig const& config);
-  void filterOpAdded(FilterConfig const& config);
+  void opAdded(int op_id, OpConfig const& config);
+  void opChanged(int op_id, OpConfig const& config);
 
   void executeClicked();
 
 private:
-  void handleNewOpearation(QString const& new_op);
+  void onOperationSelected(QString const& new_op);
 
   QGraphicsView* display_ = nullptr;
   QVBoxLayout* op_config_layout_ = nullptr;
 
+  // Currently active operation and corresponding configuration.
   QString current_op_;
-
-  ThresholdConfig threshold_config_;
-  FilterConfig filter_config_;
+  OpConfig current_op_config_;
 };

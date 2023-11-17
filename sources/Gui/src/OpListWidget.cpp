@@ -1,4 +1,5 @@
 #include <Gui/OpListWidget.hpp>
+#include <Gui/OpConfigWidgets.hpp>
 
 #include <QLabel>
 #include <QBoxLayout>
@@ -15,17 +16,28 @@ OpListWidget::OpListWidget(QWidget* parent) : QWidget(parent)
   this->setLayout(main_layout);
 }
 
-void OpListWidget::addOperation(QString const& operation)
+int OpListWidget::addOperation(QString const& operation)
 {
-  QWidget* op_widget = nullptr;
+  QWidget* op_label = new QLabel(operation);
+
+  OpConfigWidget* op_config_widget = nullptr;
   if (operation == QString("Threshold"))
   {
-    op_widget = new QLabel(operation);
+    op_config_widget = new ThresholdConfigWidget();
   }
   else if (operation == QString("Filter"))
   {
-    op_widget = new QLabel(operation);
+    op_config_widget = new FilterConfigWidget();
   }
 
-  op_list_layout_->addWidget(op_widget);
+  QObject::connect(op_config_widget, &OpConfigWidget::configurationChanged,
+    [this, op_id = current_op_id_](OpConfig const& config) 
+    {
+      emit configChanged(op_id, config);
+    });
+
+  op_list_layout_->addWidget(op_label);
+  op_list_layout_->addWidget(op_config_widget);
+
+  return current_op_id_++;
 }

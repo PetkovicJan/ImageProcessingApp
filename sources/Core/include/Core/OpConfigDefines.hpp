@@ -1,6 +1,7 @@
 #pragma once
 
-#include<stddef.h>
+#include <stddef.h>
+#include <variant>
 
 struct ThresholdConfig
 {
@@ -17,3 +18,5 @@ struct FilterConfig
   float sigma_x;
   float sigma_y;
 };
+
+using OpConfig = std::variant<ThresholdConfig, FilterConfig>;

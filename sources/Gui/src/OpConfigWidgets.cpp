@@ -6,7 +6,9 @@ FormWidget::FormWidget(QWidget* parent) : QWidget(parent)
   this->setLayout(layout_);
 }
 
-ThresholdConfigWidget::ThresholdConfigWidget(QWidget* parent) : QWidget(parent)
+OpConfigWidget::OpConfigWidget(QWidget* parent) : QWidget(parent) {}
+
+ThresholdConfigWidget::ThresholdConfigWidget(QWidget* parent) : OpConfigWidget(parent)
 {
   auto validator = new QDoubleValidator(0.0, 255.0, 2, this);
   validator->setNotation(QDoubleValidator::Notation::StandardNotation);
@@ -27,7 +29,7 @@ ThresholdConfigWidget::ThresholdConfigWidget(QWidget* parent) : QWidget(parent)
     });
 }
 
-FilterConfigWidget::FilterConfigWidget(QWidget* parent) : QWidget(parent)
+FilterConfigWidget::FilterConfigWidget(QWidget* parent) : OpConfigWidget(parent)
 {
   auto radius_validator = new QIntValidator(1, 10, this);
   auto sigma_validator = new QDoubleValidator(0.1, 10., 2, this);
