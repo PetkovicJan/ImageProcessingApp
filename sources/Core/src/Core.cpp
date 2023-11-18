@@ -101,7 +101,7 @@ void OperationChain::addOperation(int op_id, OpConfig const& config)
   chain_.emplace_back(op_id, std::visit(detail::OpCreator{}, config));
 }
 
-void OperationChain::operationModified(int op_id, OpConfig const& config)
+void OperationChain::modifyOperation(int op_id, OpConfig const& config)
 {
   if (auto op_it = std::find_if(chain_.begin(), chain_.end(), [op_id](auto const& el) 
     {
@@ -109,6 +109,17 @@ void OperationChain::operationModified(int op_id, OpConfig const& config)
     }); op_it != chain_.end())
   {
     op_it->second = std::visit(detail::OpCreator{}, config);
+  }
+}
+
+void OperationChain::removeOperation(int op_id)
+{
+  if (auto op_it = std::find_if(chain_.begin(), chain_.end(), [op_id](auto const& el)
+    {
+      return el.first == op_id;
+    }); op_it != chain_.end())
+  {
+    chain_.erase(op_it);
   }
 }
 

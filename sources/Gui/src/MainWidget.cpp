@@ -103,6 +103,12 @@ MainWidget::MainWidget()
       emit opChanged(op_id, config);
     });
 
+  QObject::connect(op_list_widget, &OpListWidget::opRemoved,
+    [this](int op_id)
+    {
+      emit opRemoved(op_id);
+    });
+
   QObject::connect(execute_button, &QPushButton::clicked, [this]()
     {
       emit this->executeClicked();

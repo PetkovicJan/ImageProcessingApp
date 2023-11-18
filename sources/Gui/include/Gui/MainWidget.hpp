@@ -22,6 +22,7 @@ signals:
 
   void opAdded(int op_id, OpConfig const& config);
   void opChanged(int op_id, OpConfig const& config);
+  void opRemoved(int op_id);
 
   void executeClicked();
 

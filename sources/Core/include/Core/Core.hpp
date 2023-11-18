@@ -888,8 +888,8 @@ class OperationChain
 {
 public:
   void addOperation(int op_id, OpConfig const& config);
-
-  void operationModified(int op_id, OpConfig const& config);
+  void modifyOperation(int op_id, OpConfig const& config);
+  void removeOperation(int op_id);
 
   void executeChain(Image2d<float> const& in, Image2d<float>& out) const;
 

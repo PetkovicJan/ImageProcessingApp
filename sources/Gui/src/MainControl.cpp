@@ -71,7 +71,13 @@ MainControl::MainControl(MainWidget* main_widget)
   QObject::connect(main_widget, &MainWidget::opChanged,
     [this](int op_id, OpConfig const& config)
     {
-      this->op_chain_.operationModified(op_id, config);
+      this->op_chain_.modifyOperation(op_id, config);
+    });
+
+  QObject::connect(main_widget, &MainWidget::opRemoved,
+    [this](int op_id)
+    {
+      this->op_chain_.removeOperation(op_id);
     });
 
   QObject::connect(main_widget, &MainWidget::executeClicked, 

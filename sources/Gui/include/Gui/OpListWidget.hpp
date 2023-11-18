@@ -5,6 +5,18 @@
 #include <QWidget>
 #include <QLayout>
 
+class OpListItem : public QWidget
+{
+  Q_OBJECT
+
+public:
+  OpListItem(OpConfig const& config, QWidget* parent = nullptr);
+
+signals:
+  void configChanged(OpConfig const& config);
+  void removeClicked();
+};
+
 class OpListWidget : public QWidget
 {
   Q_OBJECT
@@ -17,6 +29,7 @@ public:
 
 signals:
   void configChanged(int op_id, OpConfig const& config);
+  void opRemoved(int op_id);
 
 private:
   QLayout* op_list_layout_ = nullptr;
