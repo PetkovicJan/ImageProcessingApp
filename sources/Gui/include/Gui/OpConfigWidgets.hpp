@@ -17,7 +17,7 @@ class FormWidget : public QWidget
   Q_OBJECT
 
 public:
-  FormWidget(QWidget* parent = nullptr);
+  FormWidget(bool init_vals, QWidget* parent = nullptr);
 
   template<typename EntryT>
   void addEntry(QString const& prompt, EntryT* val_ptr, QValidator* validator = nullptr)
@@ -29,13 +29,18 @@ public:
       entry_edit->setValidator(validator);
     }
 
+    if (init_vals_)
+    {
+      entry_edit->setText(QString::number(*val_ptr));
+    }
+
     layout_->addWidget(entry_label, current_entry_idx_, 0);
     layout_->addWidget(entry_edit, current_entry_idx_, 1);
     ++current_entry_idx_;
 
     QObject::connect(entry_edit, &QLineEdit::editingFinished, [this, entry_edit, val_ptr]() 
       {
-        if (const auto opt_val = get_val_helper<EntryT>(entry_edit->text()))
+        if (const auto opt_val = getValHelper<EntryT>(entry_edit->text()))
         {
           *val_ptr = opt_val.value();
 
@@ -49,7 +54,7 @@ signals:
 
 private:
   template<typename T>
-  std::optional<T> get_val_helper(QString const& str)
+  std::optional<T> getValHelper(QString const& str)
   {
     QLocale locale;
     bool ok = false;
@@ -80,6 +85,7 @@ private:
 
   QGridLayout* layout_ = nullptr;
   int current_entry_idx_ = 0;
+  bool init_vals_;
 };
 
 class OpConfigWidget : public QWidget
@@ -99,8 +105,11 @@ class ThresholdConfigWidget : public OpConfigWidget
 
 public:
   ThresholdConfigWidget(QWidget* parent = nullptr);
+  ThresholdConfigWidget(ThresholdConfig const& config, QWidget* parent = nullptr);
 
 private:
+  void initWidget(bool init_entries);
+
   ThresholdConfig config_;
 };
 
@@ -110,7 +119,10 @@ class FilterConfigWidget : public OpConfigWidget
 
 public:
   FilterConfigWidget(QWidget* parent = nullptr);
+  FilterConfigWidget(FilterConfig const& config, QWidget* parent = nullptr);
 
 private:
+  void initWidget(bool init_entries);
+
   FilterConfig config_;
 };
