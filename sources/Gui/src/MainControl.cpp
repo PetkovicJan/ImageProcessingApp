@@ -59,7 +59,7 @@ MainControl::MainControl(MainWidget* main_widget)
 
       detail::create_image2d_from_qimage(loaded_img, current_img_);
 
-      main_widget->setImage(QPixmap::fromImage(loaded_img));
+      main_widget->setImage(loaded_img);
     });
 
   QObject::connect(main_widget, &MainWidget::opAdded,
@@ -81,6 +81,6 @@ MainControl::MainControl(MainWidget* main_widget)
       this->op_chain_.executeChain(current_img_, result);
 
       const auto qimg = detail::create_qimage_from_image2d(result);
-      main_widget->setImage(QPixmap::fromImage(qimg));
+      main_widget->setImage(qimg);
     });
 }

@@ -15,7 +15,7 @@ class MainWidget : public QWidget
 public:
   explicit MainWidget();
 
-  void setImage(QPixmap img);
+  void setImage(QImage img);
 
 signals:
   void loadClicked();
@@ -28,7 +28,7 @@ signals:
 private:
   void onOperationSelected(QString const& new_op);
 
-  ImageView* image_view_ = nullptr;
+  ImageDisplayWidget* image_display_widget_ = nullptr;
   QVBoxLayout* op_config_layout_ = nullptr;
 
   // Currently active operation and corresponding configuration.

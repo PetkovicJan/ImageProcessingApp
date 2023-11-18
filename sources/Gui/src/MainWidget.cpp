@@ -36,7 +36,7 @@ MainWidget::MainWidget()
   auto load_action = toolbar->addAction("Load");
   auto save_action = toolbar->addAction("Save");
 
-  image_view_ = new ImageView();
+  image_display_widget_ = new ImageDisplayWidget();
 
   auto configure_op_label = new QLabel("Configure Operation");
   auto select_op_combo = new QComboBox();
@@ -63,7 +63,7 @@ MainWidget::MainWidget()
   full_layout->addLayout(main_layout);
 
   auto ops_layout = new QVBoxLayout();
-  main_layout->addWidget(image_view_, 4);
+  main_layout->addWidget(image_display_widget_, 4);
   main_layout->addLayout(ops_layout, 1);
 
   ops_layout->addWidget(configure_op_label);
@@ -109,9 +109,9 @@ MainWidget::MainWidget()
     });
 }
 
-void MainWidget::setImage(QPixmap img)
+void MainWidget::setImage(QImage img)
 {
-  image_view_->setImage(img);
+  image_display_widget_->setImage(img);
 }
 
 void MainWidget::onOperationSelected(QString const& new_op)
