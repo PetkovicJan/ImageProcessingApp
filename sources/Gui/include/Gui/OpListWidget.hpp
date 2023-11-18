@@ -13,7 +13,7 @@ public:
   OpListWidget(QWidget* parent = nullptr);
 
   // Adds operation to the list and returns its unique ID.
-  int addOperation(QString const& operation);
+  int addOperation(OpConfig const& config);
 
 signals:
   void configChanged(int op_id, OpConfig const& config);

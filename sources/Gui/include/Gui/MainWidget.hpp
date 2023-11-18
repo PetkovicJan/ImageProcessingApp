@@ -32,6 +32,5 @@ private:
   QVBoxLayout* op_config_layout_ = nullptr;
 
   // Currently active operation and corresponding configuration.
-  QString current_op_;
   OpConfig current_op_config_;
 };

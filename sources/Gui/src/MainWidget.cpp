@@ -92,7 +92,7 @@ MainWidget::MainWidget()
 
   QObject::connect(add_op_button, &QPushButton::clicked, [this, op_list_widget]() 
     {
-      const auto op_id = op_list_widget->addOperation(current_op_);
+      const auto op_id = op_list_widget->addOperation(current_op_config_);
 
       emit opAdded(op_id, current_op_config_);
     });
@@ -116,9 +116,6 @@ void MainWidget::setImage(QImage img)
 
 void MainWidget::onOperationSelected(QString const& new_op)
 {
-  // Store currently selected operation.
-  current_op_ = new_op;
-
   OpConfigWidget* op_config_widget = nullptr;
   if (new_op == QString("Threshold"))
   {

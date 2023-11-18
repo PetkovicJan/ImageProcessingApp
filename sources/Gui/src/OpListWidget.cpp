@@ -4,6 +4,22 @@
 #include <QLabel>
 #include <QBoxLayout>
 
+namespace detail
+{
+  struct OpConfigWidgetFactory
+  {
+    std::pair<QString, OpConfigWidget*> operator()(ThresholdConfig const& config)
+    {
+      return std::make_pair(QString("Threshold"), new ThresholdConfigWidget(config));
+    }
+
+    std::pair<QString, OpConfigWidget*> operator()(FilterConfig const& config)
+    {
+      return std::make_pair(QString("Filter"), new FilterConfigWidget(config));
+    }
+  };
+}
+
 OpListWidget::OpListWidget(QWidget* parent) : QWidget(parent)
 {
   auto op_list_label = new QLabel("Operation List:");
@@ -16,19 +32,11 @@ OpListWidget::OpListWidget(QWidget* parent) : QWidget(parent)
   this->setLayout(main_layout);
 }
 
-int OpListWidget::addOperation(QString const& operation)
+int OpListWidget::addOperation(OpConfig const& config)
 {
-  QWidget* op_label = new QLabel(operation);
+  const auto [name, op_config_widget] = std::visit(detail::OpConfigWidgetFactory{}, config);
 
-  OpConfigWidget* op_config_widget = nullptr;
-  if (operation == QString("Threshold"))
-  {
-    op_config_widget = new ThresholdConfigWidget();
-  }
-  else if (operation == QString("Filter"))
-  {
-    op_config_widget = new FilterConfigWidget();
-  }
+  QWidget* op_label = new QLabel(name);
 
   QObject::connect(op_config_widget, &OpConfigWidget::configurationChanged,
     [this, op_id = current_op_id_](OpConfig const& config) 
