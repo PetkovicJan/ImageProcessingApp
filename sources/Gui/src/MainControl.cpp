@@ -28,6 +28,9 @@ namespace detail
   {
     QImage qimg(img.width(), img.height(), QImage::Format_RGB32);
 
+    const auto max_val = max_value(img);
+    const auto min_val = min_value(img);
+    const auto scale = 254.f / (max_val - min_val);
     foreach_y(img, y)
     {
       // QImage has a method pixel() to access each individual pixel value, 
@@ -36,7 +39,7 @@ namespace detail
       const auto row = reinterpret_cast<QRgb*>(qimg.scanLine(y));
       foreach_x(img, x)
       {
-        const auto val = int(img(y, x));
+        const auto val = int(scale * (img(y, x) - min_val));
         row[x] = qRgb(val, val, val);
       }
     }
