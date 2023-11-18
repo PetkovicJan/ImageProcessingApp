@@ -578,6 +578,26 @@ void sobel_y(Image2d<T> const& src, BorderCondition bc, Image2d<T>& dst)
 }
 
 template<typename T>
+void sobel_abs(Image2d<T> const& src, BorderCondition bc, Image2d<T>& dst)
+{
+  const auto w = src.width();
+  const auto h = src.height();
+
+  Image2d<T> grad_x(h, w);
+  sobel_x(src, bc, grad_x);
+
+  Image2d<T> grad_y(h, w);
+  sobel_y(src, bc, grad_y);
+
+  foreach2d(dst, y, x)
+  {
+    const auto gx = grad_x(y, x);
+    const auto gy = grad_y(y, x);
+    dst(y, x) = std::sqrt(gx * gx + gy * gy);
+  }
+}
+
+template<typename T>
 void box_filter_x(Image2d<T> const& src, ptrdiff_t kernel_radius, BorderCondition bc, Image2d<T>& dst)
 {
   const auto kernel_sz = 2 * kernel_radius + 1;
@@ -882,6 +902,17 @@ public:
 
 private:
   FilterConfig config_;
+};
+
+class GradOp : public Operation
+{
+public:
+  GradOp(GradConfig const& config);
+
+  void perform(Image2d<float> const& in, Image2d<float>& out) const override;
+
+private:
+  GradConfig config_;
 };
 
 class OperationChain

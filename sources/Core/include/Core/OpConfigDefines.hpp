@@ -19,4 +19,10 @@ struct FilterConfig
   float sigma_y;
 };
 
-using OpConfig = std::variant<ThresholdConfig, FilterConfig>;
+
+struct GradConfig
+{
+  int type;
+};
+
+using OpConfig = std::variant<ThresholdConfig, FilterConfig, GradConfig>;

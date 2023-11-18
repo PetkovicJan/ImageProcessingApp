@@ -78,6 +78,11 @@ namespace detail
     {
       return std::make_unique<FilterOp>(config);
     }
+
+    std::unique_ptr<Operation> operator()(GradConfig const& config)
+    {
+      return std::make_unique<GradOp>(config);
+    }
   };
 }
 
@@ -94,6 +99,34 @@ void FilterOp::perform(Image2d<float> const& in, Image2d<float>& out) const
 {
   gauss_filter(in, config_.kernel_radius_y, config_.kernel_radius_x, 
     config_.sigma_y, config_.sigma_x, BorderCondition::BC_CLAMP, out);
+}
+
+GradOp::GradOp(GradConfig const& config) : config_(config) {}
+
+void GradOp::perform(Image2d<float> const& in, Image2d<float>& out) const
+{
+  switch (config_.type)
+  {
+  case 1:
+  {
+    sobel_x(in, BorderCondition::BC_CLAMP, out);
+  }
+  break;
+  case 2:
+  {
+    sobel_y(in, BorderCondition::BC_CLAMP, out);
+  }
+  break;
+  case 3:
+  {
+    sobel_abs(in, BorderCondition::BC_CLAMP, out);
+  }
+  break;
+  default:
+  {
+  break;
+  }
+  }
 }
 
 void OperationChain::addOperation(int op_id, OpConfig const& config)

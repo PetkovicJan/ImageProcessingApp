@@ -18,6 +18,11 @@ namespace detail
     {
       return std::make_pair(QString("Filter"), new FilterConfigWidget(config));
     }
+
+    std::pair<QString, OpConfigWidget*> operator()(GradConfig const& config)
+    {
+      return std::make_pair(QString("Gradient"), new GradConfigWidget(config));
+    }
   };
 
   void remove_widget(QLayout* layout, QWidget* widget)

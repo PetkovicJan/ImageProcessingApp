@@ -73,3 +73,32 @@ void FilterConfigWidget::initWidget(bool init_entries)
       emit this->configurationChanged(config_);
     });
 }
+
+GradConfigWidget::GradConfigWidget(QWidget* parent) : OpConfigWidget(parent)
+{
+  initWidget(false);
+}
+
+GradConfigWidget::GradConfigWidget(GradConfig const& config, QWidget* parent) : 
+  OpConfigWidget(parent), config_(config)
+{
+  initWidget(true);
+}
+
+void GradConfigWidget::initWidget(bool init_entries)
+{
+  auto grad_type_validator = new QIntValidator(1, 3, this);
+
+  auto grad_form_widget = new FormWidget(init_entries);
+  grad_form_widget->addEntry<int>("Type (1, 2, 3):", &config_.type, grad_type_validator);
+
+  auto layout = new QVBoxLayout();
+  layout->addWidget(grad_form_widget);
+
+  this->setLayout(layout);
+
+  QObject::connect(grad_form_widget, &FormWidget::entryChanged, [this]() 
+    {
+      emit this->configurationChanged(config_);
+    });
+}

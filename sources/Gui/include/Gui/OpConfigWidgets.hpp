@@ -126,3 +126,17 @@ private:
 
   FilterConfig config_;
 };
+
+class GradConfigWidget : public OpConfigWidget
+{
+  Q_OBJECT
+
+public:
+  GradConfigWidget(QWidget* parent = nullptr);
+  GradConfigWidget(GradConfig const& config, QWidget* parent = nullptr);
+
+private:
+  void initWidget(bool init_entries);
+
+  GradConfig config_;
+};
