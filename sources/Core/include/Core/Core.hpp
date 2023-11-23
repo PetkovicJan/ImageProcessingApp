@@ -852,6 +852,12 @@ void canny_edge_detection(Image2d<T> const& src, T low_threshold, T high_thresho
   }
 
   detail::hysteresis_edge_tracking(dst);
+
+  // Finally, set to zero all non-max values.
+  foreach2d(dst, y, x)
+  {
+    dst(y, x) = 255 * (dst(y, x) == 255);
+  }
 }
 
 template<typename T>
