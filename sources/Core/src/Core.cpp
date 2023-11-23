@@ -107,17 +107,17 @@ void GradOp::perform(Image2d<float> const& in, Image2d<float>& out) const
 {
   switch (config_.type)
   {
-  case 1:
+  case GradConfig::GradType::GradX:
   {
     sobel_x(in, BorderCondition::BC_CLAMP, out);
   }
   break;
-  case 2:
+  case GradConfig::GradType::GradY:
   {
     sobel_y(in, BorderCondition::BC_CLAMP, out);
   }
   break;
-  case 3:
+  case GradConfig::GradType::GradAbs:
   {
     sobel_abs(in, BorderCondition::BC_CLAMP, out);
   }

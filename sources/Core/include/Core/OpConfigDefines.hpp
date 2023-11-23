@@ -22,7 +22,9 @@ struct FilterConfig
 
 struct GradConfig
 {
-  int type;
+  enum class GradType { GradX, GradY, GradAbs };
+
+  GradType type;
 };
 
 using OpConfig = std::variant<ThresholdConfig, FilterConfig, GradConfig>;
