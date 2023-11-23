@@ -23,6 +23,11 @@ namespace detail
     {
       return std::make_pair(QString("Gradient"), new GradConfigWidget(config));
     }
+
+    std::pair<QString, OpConfigWidget*> operator()(CannyConfig const& config)
+    {
+      return std::make_pair(QString("Canny"), new CannyConfigWidget(config));
+    }
   };
 
   void remove_widget(QLayout* layout, QWidget* widget)

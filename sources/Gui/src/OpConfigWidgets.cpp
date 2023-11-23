@@ -107,3 +107,31 @@ void GradConfigWidget::initWidget(bool init_entries)
       emit this->configurationChanged(config_);
     });
 }
+
+CannyConfigWidget::CannyConfigWidget(QWidget* parent) : OpConfigWidget(parent)
+{
+  initWidget(false);
+}
+
+CannyConfigWidget::CannyConfigWidget(CannyConfig const& config, QWidget* parent) : 
+  OpConfigWidget(parent), config_(config)
+{
+  initWidget(true);
+}
+
+void CannyConfigWidget::initWidget(bool init_entries)
+{
+  auto form_widget = new FormWidget(init_entries);
+  form_widget->addLineEdit<float>("Low threshold:", &config_.lo_thresh);
+  form_widget->addLineEdit<float>("High threshold:", &config_.hi_thresh);
+
+  auto layout = new QVBoxLayout();
+  layout->addWidget(form_widget);
+
+  this->setLayout(layout);
+
+  QObject::connect(form_widget, &FormWidget::valueChanged, [this]() 
+    {
+      emit this->configurationChanged(config_);
+    });
+}

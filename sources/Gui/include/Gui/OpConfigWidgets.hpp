@@ -227,3 +227,17 @@ private:
 
   GradConfig config_;
 };
+
+class CannyConfigWidget : public OpConfigWidget
+{
+  Q_OBJECT
+
+public:
+  CannyConfigWidget(QWidget* parent = nullptr);
+  CannyConfigWidget(CannyConfig const& config, QWidget* parent = nullptr);
+
+private:
+  void initWidget(bool init_entries);
+
+  CannyConfig config_;
+};

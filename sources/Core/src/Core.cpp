@@ -83,6 +83,11 @@ namespace detail
     {
       return std::make_unique<GradOp>(config);
     }
+
+    std::unique_ptr<Operation> operator()(CannyConfig const& config)
+    {
+      return std::make_unique<CannyOp>(config);
+    }
   };
 }
 
@@ -127,6 +132,16 @@ void GradOp::perform(Image2d<float> const& in, Image2d<float>& out) const
   break;
   }
   }
+}
+
+CannyOp::CannyOp(CannyConfig const& config) : config_(config) {}
+
+void CannyOp::perform(Image2d<float> const& in, Image2d<float>& out) const
+{
+  Image2d<unsigned char> canny_mask(out.size());
+  canny_edge_detection(in, config_.lo_thresh, config_.hi_thresh, canny_mask);
+
+  fill(out, canny_mask);
 }
 
 void OperationChain::addOperation(int op_id, OpConfig const& config)

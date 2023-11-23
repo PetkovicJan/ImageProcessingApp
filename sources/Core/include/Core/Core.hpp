@@ -915,6 +915,17 @@ private:
   GradConfig config_;
 };
 
+class CannyOp : public Operation
+{
+public:
+  CannyOp(CannyConfig const& config);
+
+  void perform(Image2d<float> const& in, Image2d<float>& out) const override;
+
+private:
+  CannyConfig config_;
+};
+
 class OperationChain
 {
 public:

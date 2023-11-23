@@ -43,7 +43,7 @@ MainWidget::MainWidget()
   auto add_op_button = new QPushButton("Add Operation");
   auto execute_button = new QPushButton("Execute Operation");
 
-  const std::vector<QString> op_names = { "Threshold", "Filter", "Gradient" };
+  const std::vector<QString> op_names = { "Threshold", "Filter", "Gradient", "Canny" };
   for (const auto& name : op_names)
   {
     select_op_combo->addItem(name);
@@ -134,6 +134,10 @@ void MainWidget::onOperationSelected(QString const& new_op)
   else if (new_op == QString("Gradient"))
   {
     op_config_widget = new GradConfigWidget();
+  }
+  else if (new_op == QString("Canny"))
+  {
+    op_config_widget = new CannyConfigWidget();
   }
   else
   {

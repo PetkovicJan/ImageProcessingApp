@@ -19,7 +19,6 @@ struct FilterConfig
   float sigma_y;
 };
 
-
 struct GradConfig
 {
   enum class GradType { GradX, GradY, GradAbs };
@@ -27,4 +26,10 @@ struct GradConfig
   GradType type;
 };
 
-using OpConfig = std::variant<ThresholdConfig, FilterConfig, GradConfig>;
+struct CannyConfig
+{
+  float lo_thresh;
+  float hi_thresh;
+};
+
+using OpConfig = std::variant<ThresholdConfig, FilterConfig, GradConfig, CannyConfig>;
