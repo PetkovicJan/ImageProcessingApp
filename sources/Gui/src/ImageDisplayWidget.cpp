@@ -1,6 +1,5 @@
 #include <Gui/ImageDisplayWidget.hpp>
 
-#include <QLabel>
 #include <QMouseEvent>
 #include <QLayout>
 
@@ -26,9 +25,9 @@ void ImageView::mouseMoveEvent(QMouseEvent* event)
 ImageDisplayWidget::ImageDisplayWidget(QWidget* parent)
 {
   // Create widgets.
-  auto label_x = new QLabel("x: 0");
-  auto label_y = new QLabel("y: 0");
-  auto label_val = new QLabel("value: 0");
+  label_x_ = new QLabel("x: 0");
+  label_y_ = new QLabel("y: 0");
+  label_val_ = new QLabel("value: 0");
 
   image_view_ = new ImageView();
 
@@ -40,32 +39,27 @@ ImageDisplayWidget::ImageDisplayWidget(QWidget* parent)
   main_layout->addLayout(stats_layout);
   main_layout->addWidget(image_view_);
 
-  stats_layout->addWidget(label_x);
-  stats_layout->addWidget(label_y);
-  stats_layout->addWidget(label_val);
+  stats_layout->addWidget(label_x_);
+  stats_layout->addWidget(label_y_);
+  stats_layout->addWidget(label_val_);
   stats_layout->addStretch();
 
   // Make connections.
-  QObject::connect(image_view_, &ImageView::imageHovered, 
-    [this, label_x, label_y, label_val](QPointF const& img_pos) 
+  QObject::connect(image_view_, &ImageView::imageHovered,
+    [this](QPointF const& img_pos)
     {
-      const auto pt = img_pos.toPoint();
-      const auto img_sz = displayed_img_.size();
-      if (
-        pt.x() >= 0 && pt.x() < img_sz.width() && 
-        pt.y() >= 0 && pt.y() < img_sz.height())
-      {
-        const auto rgb = displayed_img_.pixel(pt);
-        const auto gray_val = 0.333333f * float(qRed(rgb) + qGreen(rgb) + qBlue(rgb));
-        label_x->setText(QString("x: %1").arg(pt.x()));
-        label_y->setText(QString("y: %1").arg(pt.y()));
-        label_val->setText(QString("value: %1").arg(gray_val));
-      }
+      emit this->imageHovered(img_pos);
     });
 }
 
 void ImageDisplayWidget::setImage(QImage img)
 {
-  displayed_img_ = img;
   image_view_->setImage(QPixmap::fromImage(img));
+}
+
+void ImageDisplayWidget::setHoveredPixelValue(int x, int y, float val)
+{
+  label_x_->setText(QString("x: %1").arg(x));
+  label_y_->setText(QString("y: %1").arg(y));
+  label_val_->setText(QString("value: %1").arg(val));
 }

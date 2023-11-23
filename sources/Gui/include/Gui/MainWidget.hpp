@@ -17,8 +17,12 @@ public:
 
   void setImage(QImage img);
 
+  void setHoveredPixelValue(int x, int y, float val);
+
 signals:
   void loadClicked();
+
+  void imageHovered(QPointF const& pt);
 
   void opAdded(int op_id, OpConfig const& config);
   void opChanged(int op_id, OpConfig const& config);

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QLabel>
 #include <QWidget>
 #include <QGraphicsView>
 
@@ -21,14 +22,22 @@ protected:
 
 class ImageDisplayWidget : public QWidget
 {
+  Q_OBJECT
+
 public:
   ImageDisplayWidget(QWidget* parent = nullptr);
 
   void setImage(QImage img);
 
+  void setHoveredPixelValue(int x, int y, float val);
+
+signals:
+  void imageHovered(QPointF const& pt);
+
 private:
   ImageView* image_view_ = nullptr;
 
-  // Keep current image in memory for fast pixel access.
-  QImage displayed_img_;
+  QLabel* label_x_ = nullptr;
+  QLabel* label_y_ = nullptr;
+  QLabel* label_val_ = nullptr;
 };

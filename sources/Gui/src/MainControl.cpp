@@ -62,7 +62,18 @@ MainControl::MainControl(MainWidget* main_widget)
 
       detail::create_image2d_from_qimage(loaded_img, current_img_);
 
-      main_widget->setImage(loaded_img);
+      this->setDisplayedImage(main_widget, current_img_);
+    });
+
+  QObject::connect(main_widget, &MainWidget::imageHovered, [this, main_widget](QPointF const& img_pos)
+    {
+      if (!displayed_img_) return;
+
+      const auto pos = Position(img_pos.y(), img_pos.x());
+      if (displayed_img_->isValid(pos))
+      {
+        main_widget->setHoveredPixelValue(pos.x, pos.y, (*displayed_img_)(pos));
+      }
     });
 
   QObject::connect(main_widget, &MainWidget::opAdded,
@@ -86,10 +97,17 @@ MainControl::MainControl(MainWidget* main_widget)
   QObject::connect(main_widget, &MainWidget::executeClicked, 
     [this, main_widget]() 
     {
-      Image2d<float> result(current_img_.height(), current_img_.width());
-      this->op_chain_.executeChain(current_img_, result);
+      result_img_.alloc(current_img_.height(), current_img_.width());
+      this->op_chain_.executeChain(current_img_, result_img_);
 
-      const auto qimg = detail::create_qimage_from_image2d(result);
-      main_widget->setImage(qimg);
+      this->setDisplayedImage(main_widget, result_img_);
     });
+}
+
+void MainControl::setDisplayedImage(MainWidget* widget, Image2d<float> const& img)
+{
+  displayed_img_ = &img;
+
+  const auto qimg = detail::create_qimage_from_image2d(img);
+  widget->setImage(qimg);
 }

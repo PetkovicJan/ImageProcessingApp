@@ -85,6 +85,12 @@ MainWidget::MainWidget()
       std::cout << "Save clicked\n";
     });
 
+  QObject::connect(image_display_widget_, &ImageDisplayWidget::imageHovered, 
+    [this](QPointF const& img_pos) 
+    {
+      emit this->imageHovered(img_pos);
+    });
+
   QObject::connect(select_op_combo, &QComboBox::currentTextChanged, [this](QString const& new_op_name) 
     {
       this->onOperationSelected(new_op_name);
@@ -118,6 +124,11 @@ MainWidget::MainWidget()
 void MainWidget::setImage(QImage img)
 {
   image_display_widget_->setImage(img);
+}
+
+void MainWidget::setHoveredPixelValue(int x, int y, float val)
+{
+  image_display_widget_->setHoveredPixelValue(x, y, val);
 }
 
 void MainWidget::onOperationSelected(QString const& new_op)
